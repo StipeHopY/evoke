@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -25,9 +25,9 @@ type Props = {
 const Modal = ({ isOpen, onClose, children, label }: Props) => {
   const theme = useColorScheme();
 
+  const [modalVisible, setModalVisible] = useState(false);
   const translateY = useRef(new Animated.Value(screenHeight)).current;
   const dragY = useRef(new Animated.Value(0)).current;
-
   const pan = Animated.add(translateY, dragY);
 
   const panResponder = useRef(
@@ -53,6 +53,14 @@ const Modal = ({ isOpen, onClose, children, label }: Props) => {
 
   useEffect(() => {
     if (isOpen) {
+      setModalVisible(true);
+    } else {
+      handleAnimationClose();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (modalVisible) {
       dragY.setValue(0);
       translateY.setValue(screenHeight);
       Animated.timing(translateY, {
@@ -60,14 +68,8 @@ const Modal = ({ isOpen, onClose, children, label }: Props) => {
         duration: 300,
         useNativeDriver: true,
       }).start();
-    } else {
-      Animated.timing(translateY, {
-        toValue: screenHeight,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
     }
-  }, [isOpen]);
+  }, [modalVisible]);
 
   const handleAnimationClose = () => {
     Animated.timing(translateY, {
@@ -76,6 +78,7 @@ const Modal = ({ isOpen, onClose, children, label }: Props) => {
       useNativeDriver: true,
     }).start(() => {
       dragY.setValue(0);
+      setModalVisible(false);
       onClose();
     });
   };
@@ -83,12 +86,12 @@ const Modal = ({ isOpen, onClose, children, label }: Props) => {
   return (
     <RNModal
       transparent
-      visible={isOpen}
+      visible={modalVisible}
       animationType="none"
-      onRequestClose={onClose}
+      onRequestClose={handleAnimationClose}
     >
       <View style={styles.overlay}>
-        <Pressable style={styles.background} onPress={onClose} />
+        <Pressable style={styles.background} onPress={handleAnimationClose} />
         <Animated.View
           style={[
             styles.modalContainer,

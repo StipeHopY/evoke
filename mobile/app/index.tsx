@@ -17,7 +17,7 @@ const App = () => {
 
   useEffect(() => {
     if (user && !User.username) {
-      dispatch(createUser({username: user.username}));
+      dispatch(createUser({ username: user.username }));
     }
   }, [user]);
 

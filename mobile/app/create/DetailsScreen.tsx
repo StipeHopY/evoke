@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
+import { View, StyleSheet, Pressable, TextInput } from "react-native";
 import { ChevronLeft } from "lucide-react-native";
 import { useRouter } from "expo-router";
 
 import ScreenContainer from "@/components/containers/ScreenContainer";
 import useColorScheme from "@/common/hooks/useColorScheme";
 import TypeSelectorSlider from "./(components)/TypeSelectorSlider";
-import Modal from "@/components/ui/Modal"; // Adjust the path if needed
 import AnimatedButton from "@/components/ui/AnimatedButton";
+import DiscardChanges from "@/components/ui/DiscardChanges";
 
 const DetailsScreen = () => {
   const router = useRouter();
@@ -96,59 +96,11 @@ const DetailsScreen = () => {
           />
         </View>
       </View>
-      <Modal
+      <DiscardChanges
         isOpen={showDiscardModal}
         onClose={() => setShowDiscardModal(false)}
-      >
-        <View style={{ padding: 20 }}>
-          <Text
-            style={{
-              fontSize: 16,
-              color: theme.colors.text,
-              textAlign: "center",
-              marginBottom: 20,
-            }}
-          >
-            Discard your changes?
-          </Text>
-          <Pressable
-            onPress={handleDiscardChanges}
-            style={{
-              backgroundColor: theme.colors.buttonBgColor,
-              paddingVertical: 12,
-              borderRadius: 8,
-              marginBottom: 10,
-            }}
-          >
-            <Text
-              style={{
-                color: theme.colors.buttonTextColor,
-                textAlign: "center",
-                fontWeight: "600",
-              }}
-            >
-              Discard
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => setShowDiscardModal(false)}
-            style={{
-              paddingVertical: 12,
-              borderRadius: 8,
-            }}
-          >
-            <Text
-              style={{
-                color: theme.colors.inactive,
-                textAlign: "center",
-              }}
-            >
-              Cancel
-            </Text>
-          </Pressable>
-        </View>
-      </Modal>
+        handleDiscardChanges={handleDiscardChanges}
+      />
     </ScreenContainer>
   );
 };
