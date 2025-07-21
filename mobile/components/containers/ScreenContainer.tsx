@@ -8,7 +8,6 @@ type ScreenContainerType = ViewProps & {
 };
 
 const ScreenContainer = ({ children }: ScreenContainerType) => {
-  // NOTES: set padding if needed
   const { top } = useSafeAreaInsets();
   const theme = useColorScheme();
 

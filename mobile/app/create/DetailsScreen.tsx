@@ -33,7 +33,6 @@ const DetailsScreen = () => {
   };
 
   const handleDiscardChanges = () => {
-    setShowDiscardModal(false);
     router.replace("/(tabs)/home");
   };
 
