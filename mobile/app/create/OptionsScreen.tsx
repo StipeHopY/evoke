@@ -10,7 +10,6 @@ import AnimatedButton from "@/components/ui/AnimatedButton";
 import { DateStateType } from "@/types";
 import Date from "./(components)/Date";
 import Deadline from "./(components)/Deadline";
-import AttachToItem from "./(components)/AttachToItem";
 import HighPriority from "./(components)/HighPriority";
 
 const OptionsScreen = () => {
@@ -72,7 +71,6 @@ const OptionsScreen = () => {
           <View style={styles.selectButtonsContainer}>
             <Date setDate={setDate} date={date} deadline={deadline} />
             <Deadline setDeadline={setDeadline} startDate={date} />
-            <AttachToItem />
             <HighPriority
               isHighPriority={isHighPriority}
               setIsHighPriority={setIsHighPriority}

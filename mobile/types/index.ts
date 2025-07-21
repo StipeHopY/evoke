@@ -20,7 +20,7 @@ export type Theme = {
 };
 
 export type ReminderType = {
-  type: "notification" | "alarm" | "none";
+  type: "Notification" | "Alarm" | "None";
   reminderOffset:
     | "None"
     | "At start time"

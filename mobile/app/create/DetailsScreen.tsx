@@ -5,7 +5,6 @@ import { useRouter } from "expo-router";
 
 import ScreenContainer from "@/components/containers/ScreenContainer";
 import useColorScheme from "@/common/hooks/useColorScheme";
-import TypeSelectorSlider from "./(components)/TypeSelectorSlider";
 import AnimatedButton from "@/components/ui/AnimatedButton";
 import DiscardChanges from "@/components/ui/DiscardChanges";
 
@@ -14,14 +13,13 @@ const DetailsScreen = () => {
   const theme = useColorScheme();
 
   // TODO: delete placeholders
-  const [selectedValue, setSelectedValue] = useState<string | null>("Task");
   const [title, setTitle] = useState<string>("Clean room");
   const [description, setDescription] = useState<string>(
     "You shold clean your room!"
   );
   const [showDiscardModal, setShowDiscardModal] = useState(false);
 
-  const isNextDisabled = !selectedValue || title.trim() === "";
+  const hasTitle = title.trim() === "";
   const hasUnsavedChanges = title.trim() !== "" || description.trim() !== "";
 
   const handleGoBack = () => {
@@ -49,12 +47,12 @@ const DetailsScreen = () => {
         <AnimatedButton
           label="Next"
           onPress={handleNextSlide}
-          disabled={isNextDisabled}
+          disabled={hasTitle}
           isLoading={false}
           style={[
             styles.nextButton,
             {
-              backgroundColor: isNextDisabled
+              backgroundColor: hasTitle
                 ? "transparent"
                 : theme.colors.buttonBgColor,
             },
@@ -62,10 +60,6 @@ const DetailsScreen = () => {
         />
       </View>
       <View style={styles.slide}>
-        <TypeSelectorSlider
-          selectedValue={selectedValue}
-          setSelectedValue={setSelectedValue}
-        />
         <View style={{ paddingHorizontal: 10, flex: 1 }}>
           <TextInput
             value={title}

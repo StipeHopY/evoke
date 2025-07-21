@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Calendar as CalendarIcon } from "lucide-react-native";
 
@@ -12,6 +12,7 @@ import { getRoundedCurrentTime } from "@/utils/dateTimeHelpers";
 import { DateStateType, ReminderType } from "@/types/index";
 import ErrorComponent from "@/components/ui/Error";
 import Reminder from "./Reminder";
+import Repeat from "@/components/calendar/Repeat";
 
 type CalendarProps = {
   label: string;
@@ -42,9 +43,10 @@ const Calendar = ({
   const [selectedDate, setSelectedDate] = useState<SelectedTimeState>("Today");
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const [reminder, setReminder] = useState<ReminderType>({
-    type: "notification",
+    type: "Notification",
     reminderOffset: "At start time",
   });
+  const [repeatDays, setRepeatDays] = useState<string[]>([]);
 
   const selectToday = () => {
     setSelectedDate(formatDate(new Date()));
@@ -79,6 +81,10 @@ const Calendar = ({
     setIsCalendarOpen(false);
   };
 
+  useEffect(() => {
+    console.log("Repeat Days: ", repeatDays);
+  }, [repeatDays]);
+
   // TODO: add cancel button
 
   return (
@@ -109,10 +115,8 @@ const Calendar = ({
             />
           </SelectButton>
         </View>
-        <Text style={[styles.label, { color: theme.colors.inactive }]}>
-          Reminder settings
-        </Text>
         <Reminder reminder={reminder} setReminder={setReminder} />
+        <Repeat repeatDays={repeatDays} setRepeatDays={setRepeatDays} />
         <TimePicker setTime={setSelectedTime} />
         <DatePicker
           isOpen={isCalendarOpen}

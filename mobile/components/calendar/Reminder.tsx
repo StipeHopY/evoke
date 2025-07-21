@@ -32,7 +32,10 @@ const Reminder = ({ reminder, setReminder }: ReminderProps) => {
 
   return (
     <>
-      <SelectButton label="Reminder" onPress={openReminderModal}>
+      <Text style={[styles.label, { color: theme.colors.inactive }]}>
+        Reminder
+      </Text>
+      <SelectButton label={reminder.type} onPress={openReminderModal}>
         <AlarmClock color={theme.colors.text} size={15} />
       </SelectButton>
       <Modal isOpen={isModalOpen} onClose={closeReminderModal} label="Reminder">
@@ -42,30 +45,30 @@ const Reminder = ({ reminder, setReminder }: ReminderProps) => {
         <View style={styles.container}>
           <SelectButton
             label="Notification"
-            isSelected={reminder.type === "notification"}
+            isSelected={reminder.type === "Notification"}
             onPress={() => {
               setReminder({
                 ...reminder,
-                type: "notification",
+                type: "Notification",
               });
             }}
           />
           <SelectButton
             label="Alarm"
-            isSelected={reminder.type === "alarm"}
+            isSelected={reminder.type === "Alarm"}
             onPress={() => {
               setReminder({
                 ...reminder,
-                type: "alarm",
+                type: "Alarm",
               });
             }}
           />
           <SelectButton
             label="None"
-            isSelected={reminder.type === "none"}
+            isSelected={reminder.type === "None"}
             onPress={() => {
               setReminder({
-                type: "none",
+                type: "None",
                 reminderOffset: "None",
               });
             }}
@@ -78,7 +81,7 @@ const Reminder = ({ reminder, setReminder }: ReminderProps) => {
           <SelectButton
             label="At start time"
             isSelected={reminder.reminderOffset === "At start time"}
-            disabled={reminder.type === "none"}
+            disabled={reminder.type === "None"}
             onPress={() => {
               setReminder({
                 ...reminder,
@@ -89,7 +92,7 @@ const Reminder = ({ reminder, setReminder }: ReminderProps) => {
           <SelectButton
             label="5 minutes before start"
             isSelected={reminder.reminderOffset === "5 minutes before start"}
-            disabled={reminder.type === "none"}
+            disabled={reminder.type === "None"}
             onPress={() => {
               setReminder({
                 ...reminder,
@@ -100,7 +103,7 @@ const Reminder = ({ reminder, setReminder }: ReminderProps) => {
           <SelectButton
             label="15 minutes before start"
             isSelected={reminder.reminderOffset === "15 minutes before start"}
-            disabled={reminder.type === "none"}
+            disabled={reminder.type === "None"}
             onPress={() => {
               setReminder({
                 ...reminder,
@@ -139,7 +142,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: "500",
-    marginBottom: 8,
+    marginBottom: 5,
   },
   button: {
     width: "100%",

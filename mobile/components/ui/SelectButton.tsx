@@ -44,7 +44,7 @@ const SelectButton = ({
           {Icon && <Icon size={15} color={theme.colors.text} />}
           <Text
             style={[
-              styles.calendarShortcutText,
+              styles.label,
               {
                 color: isSelected && !disabled
                   ? theme.colors.buttonTextColor
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  calendarShortcutText: {
+  label: {
     fontSize: 13,
     fontWeight: "500",
   },
