@@ -9,6 +9,7 @@ type SelectButtonProps = {
   children?: React.ReactNode;
   isSelected?: boolean;
   onPress: () => void;
+  onLongPress?: () => void;
   disabled?: boolean;
   isAddButton?: boolean;
 };
@@ -19,6 +20,7 @@ const SelectButton = ({
   Icon,
   children,
   onPress,
+  onLongPress,
   disabled,
   isAddButton = false,
 }: SelectButtonProps) => {
@@ -37,6 +39,7 @@ const SelectButton = ({
         },
       ]}
       onPress={onPress}
+      onLongPress={onLongPress}
     >
       {children && children}
       {label && (

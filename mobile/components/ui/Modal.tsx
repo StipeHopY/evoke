@@ -83,6 +83,8 @@ const Modal = ({ isOpen, onClose, children, label }: Props) => {
     });
   };
 
+  // TODO: check if animations are always rendering even if isOpen is false
+
   return (
     <RNModal
       transparent

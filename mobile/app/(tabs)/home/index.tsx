@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 import { useSelector } from "react-redux";
 
-import ScreenContainer from "@/components/containers/ScreenContainer";
+import ScreenContainer from "@/components/ui/ScreenContainer";
 import { RootState } from "@/store/store";
 import useColorScheme from "@/common/hooks/useColorScheme";
 
@@ -13,7 +13,7 @@ const HomeScreen = () => {
     <ScreenContainer>
       <View style={styles.container}>
         <Text style={[styles.title, { color: colors.text }]}>
-          What's up {user ? user.username : "home"}
+         {user ? `What's up ${user.username}` : "Hi 👋"}
         </Text>
         <Button
           title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}

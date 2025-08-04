@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react-native";
 import { useRouter } from "expo-router";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
-import ScreenContainer from "@/components/containers/ScreenContainer";
+import ScreenContainer from "@/components/ui/ScreenContainer";
 import LabelSelector from "./(components)/LabelSelector";
 import AnimatedButton from "@/components/ui/AnimatedButton";
 import { DateStateType } from "@/types";
@@ -18,7 +18,6 @@ const OptionsScreen = () => {
 
   const [isCreateDisabled, setIsCreatedDisabled] = useState<boolean>(false);
 
-  const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [isHighPriority, setIsHighPriority] = useState<boolean>(false);
   const [date, setDate] = useState<DateStateType>({
     time: null,
@@ -60,10 +59,7 @@ const OptionsScreen = () => {
         />
       </View>
       <View style={styles.slide}>
-        <LabelSelector
-          selectedLabel={selectedLabel}
-          setSelectedLabel={setSelectedLabel}
-        />
+        <LabelSelector />
         <View>
           <Text style={[styles.label, { color: theme.colors.inactive }]}>
             Other (optional)
@@ -93,7 +89,7 @@ const styles = StyleSheet.create({
   slide: {
     flex: 1,
     width: "100%",
-    paddingLeft: 10,
+    paddingHorizontal: 10,
     paddingBottom: 40,
     gap: 30,
   },

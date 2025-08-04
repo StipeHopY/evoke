@@ -2,6 +2,7 @@ import { View, StyleSheet, ViewProps } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
+import { useEffect } from "react";
 
 type ScreenContainerType = ViewProps & {
   children: React.ReactNode;

@@ -123,7 +123,7 @@ const Calendar = ({
           onClose={closeCalenadar}
           onSelectDate={onSelectDate}
         />
-        <ErrorComponent error={error} />
+        <ErrorComponent message={error} />
         <Pressable
           style={[
             styles.button,

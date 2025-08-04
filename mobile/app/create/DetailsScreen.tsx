@@ -3,7 +3,7 @@ import { View, StyleSheet, Pressable, TextInput } from "react-native";
 import { ChevronLeft } from "lucide-react-native";
 import { useRouter } from "expo-router";
 
-import ScreenContainer from "@/components/containers/ScreenContainer";
+import ScreenContainer from "@/components/ui/ScreenContainer";
 import useColorScheme from "@/common/hooks/useColorScheme";
 import AnimatedButton from "@/components/ui/AnimatedButton";
 import DiscardChanges from "@/components/ui/DiscardChanges";

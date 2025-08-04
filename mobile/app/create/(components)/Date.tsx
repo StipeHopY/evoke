@@ -18,6 +18,8 @@ type DateProps = {
   deadline: DateStateType;
 };
 
+// TODO: add cancel button here and on deadline component
+
 const Date = ({ setDate, deadline }: DateProps) => {
   const theme = useColorScheme();
 

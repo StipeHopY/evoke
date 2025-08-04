@@ -1,29 +1,34 @@
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { UsernameType } from "@/types/index";
+import { UserState } from "@/types/index";
+import { handleError } from "@/utils/handleError";
 
 const useUser = () => {
-  const [user, setUser] = useState<UsernameType | undefined>(undefined);
+  const [user, setUser] = useState<UserState>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const getuser = async () => {
+  const handleGetUser = async () => {
     try {
-      const username = await AsyncStorage.getItem("username");
-      if (username) {
-        setUser({ username });
+      const userItem = await AsyncStorage.getItem("user");
+      if (userItem) {
+        const parseUser = JSON.parse(userItem);
+        setUser(parseUser);
       }
     } catch (err) {
-      console.error(err);
-      setError("Something went wrong, please try again.");
+      const errorMessage = handleError(err)
+      setError(errorMessage);
     } finally {
-      setLoading(false);
+      
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000)
     }
   };
 
   useEffect(() => {
-    getuser();
+    handleGetUser();
   }, []);
 
   return { user, loading, error };

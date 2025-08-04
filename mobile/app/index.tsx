@@ -1,37 +1,64 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Redirect } from "expo-router";
 import { useSelector, useDispatch } from "react-redux";
-import { ActivityIndicator } from "react-native";
 
-import { RootState } from "@/store/store";
-import { createUser, deleteUser } from "@/store/user/userSlice";
+import { AppDispatch, RootState } from "@/store/store";
+import { getUserAction } from "@/store/actions/userActions";
 import Username from "@/components/forms/username/UsernameForm";
-import useUser from "@/common/hooks/useUser";
-import useColorScheme from "@/common/hooks/useColorScheme";
+import { handleError } from "@/utils/handleError";
+import ScreenContainer from "@/components/ui/ScreenContainer";
+import Error from "@/components/ui/Error";
+import Loader from "@/components/ui/Loader";
 
 const App = () => {
-  const dispatch = useDispatch();
-  const theme = useColorScheme();
-  const User = useSelector((state: RootState) => state.user);
-  const { user, loading } = useUser();
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.user);
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGetUser = async () => {
+    try {
+      setLoading(true);
+      const { error: err } = await dispatch(getUserAction());
+
+      if (err) {
+        setError(err);
+        return;
+      }
+
+      setError(null);
+    } catch (err) {
+      const errorMessage = handleError(err);
+      setError(errorMessage);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
+  };
 
   useEffect(() => {
-    if (user && !User.username) {
-      dispatch(createUser({ username: user.username }));
-    }
-  }, [user]);
-
-  // TODO: check loader, because I think is not showing
+    handleGetUser();
+  }, []);
 
   if (loading) {
-    return <ActivityIndicator color={theme.colors.text} size="large" />;
+    return <Loader />;
   }
 
-  if (!user || (user && !user.username)) {
+  if (error) {
+    return (
+      <ScreenContainer>
+        <Error message={error} isModal={true} />
+      </ScreenContainer>
+    );
+  }
+
+  if (!user && !loading && !error) {
     return <Username />;
   }
 
-  if (user && user.username) {
+  if (user && !loading && !error) {
     return <Redirect href={"/(tabs)/home"} />;
   }
 };

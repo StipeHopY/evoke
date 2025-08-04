@@ -1,7 +1,5 @@
 export type RouteName = "home" | "chat" | "create" | "goals" | "options";
-export type UsernameType = {
-  username: string | undefined;
-};
+
 export type Theme = {
   colors: {
     active: string;
@@ -32,3 +30,23 @@ export type DateStateType = {
   time: string | null;
   date: string | null;
 };
+
+export type LabelType = {
+  id: string;
+  value: string;
+};
+
+export type LabelsType = {
+  labels: LabelType[];
+};
+
+export type UserType = {
+  id: string;
+  username: string | null;
+  hasDownloadedDefaultLabels: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UserState = UserType | null;
+

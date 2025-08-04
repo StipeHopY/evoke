@@ -4,10 +4,9 @@ import { ControllerRenderProps } from "react-hook-form";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
 import { isUsernameValid } from "@/utils/isUsernameValid";
-import { UsernameType } from "@/types/index";
 
 type UsernameInputProps = {
-  field: ControllerRenderProps<UsernameType, "username">;
+  field: ControllerRenderProps<{ username: string }, "username">;
   setInputValue: (value: string | undefined) => void;
 };
 

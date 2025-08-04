@@ -5,21 +5,24 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { isUsernameValid } from "@/utils/isUsernameValid";
-import { createUser } from "@/store/user/userSlice";
-import { UsernameType } from "@/types/index";
-import ScreenContainer from "@/components/containers/ScreenContainer";
+import { createUserAction } from "@/store/actions/userActions";
+import ScreenContainer from "@/components/ui/ScreenContainer";
 import useColorScheme from "@/common/hooks/useColorScheme";
 import UsernameInput from "./UsernameInput";
-import AnimatedButton from "../../ui/AnimatedButton";
+import AnimatedButton from "@/components/ui/AnimatedButton";
+import { AppDispatch } from "@/store/store";
+
+type UsernameType = {
+  username: string
+}
 
 const Username = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const theme = useColorScheme();
   const { control, handleSubmit } = useForm<UsernameType>();
 
@@ -32,7 +35,7 @@ const Username = () => {
 
   // TODO: hanle loading
 
-  const onSubmit = (data: UsernameType) => {
+  const onSubmit = async (data: UsernameType) => {
     const validUsername = isUsernameValid(data.username);
 
     if (!validUsername.isValid) {
@@ -41,10 +44,10 @@ const Username = () => {
       return;
     }
 
+    await dispatch(createUserAction(data.username));
     setError(undefined);
     setSubmittedData(data.username);
     setIsLoading(true);
-    dispatch(createUser({ username: data.username }));
 
     setTimeout(() => {
       setIsLoading(false);

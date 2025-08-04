@@ -11,7 +11,10 @@ import {
 import { UseFormHandleSubmit } from "react-hook-form";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
-import { UsernameType } from "@/types/index";
+
+type UsernameType = {
+  username: string
+}
 
 type AnimatedButtonProps = {
   label: string;
