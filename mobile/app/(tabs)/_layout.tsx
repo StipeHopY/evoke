@@ -3,8 +3,7 @@ import { Tabs } from "expo-router";
 
 import TabBar from "@/components/tabbar/TabBar";
 import useColorScheme from "@/common/hooks/useColorScheme";
-
-const tabbar = ["home", "chat", "create", "goals", "options"] ;
+import { TABBAR_SCREENS } from "@/constants/routes";
 
 const TabLayout = () => {
   const theme = useColorScheme();
@@ -17,7 +16,7 @@ const TabLayout = () => {
           headerShown: false,
         }}
       >
-        {tabbar.map((tab) => (
+        {TABBAR_SCREENS.map((tab) => (
           <Tabs.Screen key={tab} name={`${tab}/index`} />
         ))}
       </Tabs>

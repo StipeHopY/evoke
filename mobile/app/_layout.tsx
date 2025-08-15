@@ -32,6 +32,7 @@ const RootLayout = () => {
     try {
       // TODO: remove this when you finish testing
       // await AsyncStorage.removeItem("labels");
+      // await AsyncStorage.removeItem("tasks");
       // await AsyncStorage.removeItem("user");
       // const keysStore = await AsyncStorage.getAllKeys();
       // if (keysStore) {
@@ -52,11 +53,6 @@ const RootLayout = () => {
   useEffect(() => {
     handlePrepareApp();
   }, []);
-
-  // TODO: remove this
-  // useEffect(() => {
-  //   console.log("KEYS: ", keys);
-  // }, [keys]);
 
   if (!appIsReady) {
     return null;

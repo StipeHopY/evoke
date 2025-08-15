@@ -1,49 +1,36 @@
-import { DateStateType } from "@/types";
+import {
+  TaskDateType,
+  DateType,
+  DayValueType,
+  TimeType,
+  RawDateType,
+} from "@/types";
 
+// TODO: originise this file
+// parseDateTime can be used somehow with dateChange function at bottom or only her
 export const isValidDateAndDeadline = (
-  date: DateStateType,
-  deadline: DateStateType
+  startDate: TaskDateType,
+  deadline?: TaskDateType | null
 ): {
   isValid: boolean;
-  message?: string;
+  message: string | null;
 } => {
   const now = new Date();
 
-  const parseDateTime = (date: string, time: string): Date => {
-    if (!/^\d{2}:\d{2}$/.test(time)) {
-      throw new Error("Invalid time format: " + time);
-    }
-
-    const [hourStr, minuteStr] = time.split(":");
-    const hour = parseInt(hourStr, 10);
-    const minute = parseInt(minuteStr, 10);
-
-    let selectedDate: Date;
-
-    if (date === "Today") {
-      selectedDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    } else if (date === "Tomorrow") {
-      selectedDate = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1
-      );
-    } else {
-      const parts = date.split("/");
-      if (parts.length === 3) {
-        const [day, month, year] = parts.map((p) => parseInt(p, 10));
-        selectedDate = new Date(year, month - 1, day);
-      } else {
-        throw new Error("Invalid date format: " + date);
-      }
-    }
-
-    selectedDate.setHours(hour, minute, 0, 0);
-    return selectedDate;
+  const buildDateTime = (rawDate: RawDateType, time: TimeType) => {
+    return new Date(
+      rawDate.year,
+      rawDate.month - 1,
+      rawDate.day,
+      time.hour,
+      time.minute,
+      0,
+      0
+    );
   };
 
-  const isDateFilled = date.date && date.time;
-  const isDeadlineFilled = deadline.date && deadline.time;
+  const isDateFilled = startDate.date && startDate.time;
+  const isDeadlineFilled = deadline?.date && deadline.time;
 
   if (!isDateFilled && !isDeadlineFilled) {
     return {
@@ -53,60 +40,40 @@ export const isValidDateAndDeadline = (
   }
 
   if (isDateFilled && !isDeadlineFilled) {
-    try {
-      const startDateTime = parseDateTime(date.date!, date.time!);
-      if (startDateTime < now) {
-        return {
-          isValid: false,
-          message: "Start time can't be in the past.",
-        };
-      }
-      return {
-        isValid: true,
-      };
-    } catch {
+    const startDateTime = buildDateTime(startDate.date.raw, startDate.time);
+    if (startDateTime < now) {
       return {
         isValid: false,
-        message: "Invalid start date/time format.",
+        message: "Start time can't be in the past.",
       };
     }
+    return { isValid: true, message: null };
   }
 
   if (isDateFilled && isDeadlineFilled) {
-    try {
-      const startDateTime = parseDateTime(date.date!, date.time!);
-      const endDateTime = parseDateTime(deadline.date!, deadline.time!);
+    const startDateTime = buildDateTime(startDate.date.raw, startDate.time);
+    const endDateTime = buildDateTime(deadline.date.raw, deadline.time);
 
-      if (startDateTime < now) {
-        return {
-          isValid: false,
-          message: "Start time can't be in the past.",
-        };
-      }
-
-      if (endDateTime < startDateTime) {
-        return {
-          isValid: false,
-          message: "End time can't be before start time.",
-        };
-      }
-
-      if (startDateTime.getTime() === endDateTime.getTime()) {
-        return {
-          isValid: false,
-          message: "Start and end time can't be the same.",
-        };
-      }
-
-      return {
-        isValid: true,
-      };
-    } catch {
+    if (startDateTime < now) {
       return {
         isValid: false,
-        message: "Invalid date or time format.",
+        message: "Start time can't be in the past.",
       };
     }
+    if (endDateTime < startDateTime) {
+      return {
+        isValid: false,
+        message: "Deadline can't be before start time.",
+      };
+    }
+    if (startDateTime.getTime() === endDateTime.getTime()) {
+      return {
+        isValid: false,
+        message: "Start and deadline time can't be the same.",
+      };
+    }
+
+    return { isValid: true, message: null };
   }
 
   return {
@@ -115,7 +82,7 @@ export const isValidDateAndDeadline = (
   };
 };
 
-export const formatDate = (selectedDate: Date) => {
+export const formatDate = (selectedDate: Date): DateType => {
   const date = new Date(selectedDate);
   const now = new Date();
 
@@ -129,34 +96,29 @@ export const formatDate = (selectedDate: Date) => {
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
 
+  let ui = "";
+  let raw = {
+    day: date.getDate(),
+    month: date.getMonth() + 1,
+    year: date.getFullYear(),
+  };
+
   if (dateOnly.getTime() === today.getTime()) {
-    return "Today";
+    ui = "Today";
   } else if (dateOnly.getTime() === tomorrow.getTime()) {
-    return "Tomorrow";
+    ui = "Tomorrow";
+  } else if (dateOnly.getTime() === yesterday.getTime()) {
+    ui = "Yesterday";
   } else {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    const dayStr = String(raw.day).padStart(2, "0");
+    const monthStr = String(raw.month).padStart(2, "0");
+    ui = `${dayStr}/${monthStr}/${raw.year}`;
   }
-};
 
-export const getCurrentTime = () => {
-  const now = new Date();
-  let hours = now.getHours();
-  const minutes = now.getMinutes();
-
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12 || 12;
-  const hour = hours.toString().padStart(2, "0");
-
-  const roundedMinute = ["00", "15", "30", "45"].reduce((prev, curr) =>
-    Math.abs(parseInt(curr) - minutes) < Math.abs(parseInt(prev) - minutes)
-      ? curr
-      : prev
-  );
-
-  return { hour, minute: roundedMinute, ampm };
+  return {
+    ui,
+    raw,
+  };
 };
 
 export const getRoundedCurrentTime = () => {
@@ -172,15 +134,27 @@ export const getRoundedCurrentTime = () => {
 
   if (hours === 24) hours = 23;
 
-  const hourStr = hours.toString().padStart(2, "0");
-  const minuteStr = minutes.toString().padStart(2, "0");
-
   return {
-    hour: hourStr,
-    minute: minuteStr,
+    hour: hours,
+    minute: minutes,
   };
 };
 
-export const getCurrentTimeInMinutes = (hour: string, minute: string) => {
-  return Number(hour) * 60 + Number(minute);
+export const formatRepeatLabel = (
+  days: DayValueType[],
+  weekdays: DayValueType[]
+) => {
+  if (days.length === 0) {
+    return "Never";
+  } else if (days.length === 7) {
+    return "Every day";
+  } else if (weekdays.every((day) => days.includes(day)) && days.length === 5) {
+    return "Weekdays";
+  } else if (days.length === 1) {
+    return days[0];
+  } else {
+    const last = days[days.length - 1];
+    const rest = days.slice(0, -1);
+    return `${rest.join(", ")} & ${last}`;
+  }
 };

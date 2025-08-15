@@ -27,13 +27,13 @@ const LabelSelector = () => {
       await dispatch(getLabelsAction());
       setError(null);
     } catch (err) {
-      setError("Failed to load labels from AsyncStorage");
+      setError("Failed to load labels");
     }
   };
 
   return (
     <>
-      <Error message={error} isModal={true} />
+      <Error message={error} setMessage={setError} isModal={true} />
       <View style={{ marginVertical: 20 }}>
         <Text style={[styles.label, { color: theme.colors.inactive }]}>
           Label

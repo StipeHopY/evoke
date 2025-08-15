@@ -1,69 +1,81 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { useSelector } from "react-redux";
+
 import Modal from "@/components/ui/Modal";
 import useColorScheme from "@/common/hooks/useColorScheme";
+import { RootState } from "@/store/store";
+import { DateType } from "@/types";
+import { formatDate } from "@/utils/dateTimeHelpers";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onSelectDate: (date: Date) => void;
+  setSelectedDate: (selectedDate: DateType) => void;
 };
 
-const DatePicker = ({ isOpen, onClose, onSelectDate }: Props) => {
+const DatePicker = ({ isOpen, onClose, setSelectedDate }: Props) => {
   const theme = useColorScheme();
-  const now = new Date();
+  const taskDate = useSelector((state: RootState) => state.newTask.date);
 
+  const now = new Date();
   const currentDay = now.getDate();
   const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
 
-  const [year, setYear] = useState(currentYear.toString());
-  const [month, setMonth] = useState(currentMonth.toString().padStart(2, "0"));
-  const [day, setDay] = useState(currentDay.toString());
+  const [day, setDay] = useState<number>(taskDate?.date.raw.day ?? currentDay);
+  const [month, setMonth] = useState<number>(
+    taskDate?.date.raw.month ?? currentMonth
+  );
+  const [year, setYear] = useState<number>(
+    taskDate?.date.raw.year ?? currentYear
+  );
 
-  const selectedYear = Number(year);
-  const selectedMonth = Number(month);
+  const handleConfirm = () => {
+    const date = new Date(year, month - 1, day);
+    setSelectedDate(formatDate(date));
+    onClose();
+  };
 
   const daysInMonth = useMemo(() => {
-    return new Date(selectedYear, selectedMonth, 0).getDate();
-  }, [selectedYear, selectedMonth]);
+    return new Date(year, month, 0).getDate();
+  }, [year, month]);
 
   const getDayOptions = () => {
     const start =
-      selectedYear === currentYear && selectedMonth === currentMonth
-        ? currentDay
-        : 1;
+      year === currentYear && month === currentMonth ? currentDay : 1;
     return Array.from({ length: daysInMonth - start + 1 }, (_, i) => {
-      const val = (start + i).toString();
-      return <Picker.Item key={val} label={val.padStart(2, "0")} value={val} />;
+      const val = start + i;
+      return (
+        <Picker.Item
+          key={val}
+          label={String(val).padStart(2, "0")}
+          value={val}
+        />
+      );
     });
   };
 
   const getMonthOptions = () => {
-    const start = selectedYear === currentYear ? currentMonth : 1;
+    const start = year === currentYear ? currentMonth : 1;
     return Array.from({ length: 12 - start + 1 }, (_, i) => {
-      const val = (start + i).toString().padStart(2, "0");
-      return <Picker.Item key={val} label={val} value={val} />;
+      const val = start + i;
+      return (
+        <Picker.Item
+          key={val}
+          label={String(val).padStart(2, "0")}
+          value={val}
+        />
+      );
     });
   };
 
   const getYearOptions = () => {
     return Array.from({ length: 100 }, (_, i) => {
       const y = currentYear + i;
-      return (
-        <Picker.Item
-          key={y.toString()}
-          label={y.toString()}
-          value={y.toString()}
-        />
-      );
+      return <Picker.Item key={y} label={y.toString()} value={y} />;
     });
-  };
-
-  const handleConfirm = () => {
-    onSelectDate(new Date(Number(year), Number(month) - 1, Number(day)));
-    onClose();
   };
 
   return (
@@ -75,7 +87,7 @@ const DatePicker = ({ isOpen, onClose, onSelectDate }: Props) => {
         <Picker
           selectedValue={day}
           style={[styles.picker, { color: theme.colors.text }]}
-          onValueChange={setDay}
+          onValueChange={(value) => setDay(Number(value))}
         >
           {getDayOptions()}
         </Picker>
@@ -83,8 +95,8 @@ const DatePicker = ({ isOpen, onClose, onSelectDate }: Props) => {
           selectedValue={month}
           style={[styles.picker, { color: theme.colors.text }]}
           onValueChange={(value) => {
-            setMonth(value);
-            setDay("1");
+            setMonth(Number(value));
+            setDay(1);
           }}
         >
           {getMonthOptions()}
@@ -93,9 +105,9 @@ const DatePicker = ({ isOpen, onClose, onSelectDate }: Props) => {
           selectedValue={year}
           style={[styles.picker, { color: theme.colors.text }]}
           onValueChange={(value) => {
-            setYear(value);
-            setMonth(currentMonth.toString().padStart(2, "0"));
-            setDay(currentDay.toString());
+            setYear(Number(value));
+            setMonth(currentMonth);
+            setDay(currentDay);
           }}
         >
           {getYearOptions()}

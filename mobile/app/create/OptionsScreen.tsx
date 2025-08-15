@@ -7,33 +7,44 @@ import useColorScheme from "@/common/hooks/useColorScheme";
 import ScreenContainer from "@/components/ui/ScreenContainer";
 import LabelSelector from "./(components)/LabelSelector";
 import AnimatedButton from "@/components/ui/AnimatedButton";
-import { DateStateType } from "@/types";
 import Date from "./(components)/Date";
 import Deadline from "./(components)/Deadline";
 import HighPriority from "./(components)/HighPriority";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import ErrorComponent from "@/components/ui/Error";
+import { createTaskAction } from "@/store/actions/tasksActions";
+import { DETAILS_SCREEN, HOME_SCREEN } from "@/constants/routes";
 
 const OptionsScreen = () => {
   const theme = useColorScheme();
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const newTask = useSelector((state: RootState) => state.newTask);
 
   const [isCreateDisabled, setIsCreatedDisabled] = useState<boolean>(false);
-
-  const [isHighPriority, setIsHighPriority] = useState<boolean>(false);
-  const [date, setDate] = useState<DateStateType>({
-    time: null,
-    date: null,
-  });
-  const [deadline, setDeadline] = useState<DateStateType>({
-    time: null,
-    date: null,
-  });
+  const [error, setError] = useState<string | null>(null);
 
   const handleGoBack = () => {
-    router.replace("/create/DetailsScreen");
+    router.replace(DETAILS_SCREEN);
   };
 
-  const handleCreateItem = () => {
-    console.log("Task created");
+  const handleCreateItem = async () => {
+    try {
+      setIsCreatedDisabled(true);
+      const { error } = await dispatch(createTaskAction(newTask));
+      if (error) {
+        setError(error);
+        setIsCreatedDisabled(false);
+        return;
+      }
+
+      setError(null);
+      router.replace(HOME_SCREEN);
+    } catch (err) {
+      setError("Failed to create task");
+    }
   };
 
   return (
@@ -65,15 +76,13 @@ const OptionsScreen = () => {
             Other (optional)
           </Text>
           <View style={styles.selectButtonsContainer}>
-            <Date setDate={setDate} date={date} deadline={deadline} />
-            <Deadline setDeadline={setDeadline} startDate={date} />
-            <HighPriority
-              isHighPriority={isHighPriority}
-              setIsHighPriority={setIsHighPriority}
-            />
+            <Date />
+            <Deadline />
+            <HighPriority />
           </View>
         </View>
       </View>
+      <ErrorComponent message={error} setMessage={setError} isModal={true} />
     </ScreenContainer>
   );
 };

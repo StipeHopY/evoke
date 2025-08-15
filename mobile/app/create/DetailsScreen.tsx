@@ -2,15 +2,19 @@ import { useState } from "react";
 import { View, StyleSheet, Pressable, TextInput } from "react-native";
 import { ChevronLeft } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import { useDispatch } from "react-redux";
 
 import ScreenContainer from "@/components/ui/ScreenContainer";
 import useColorScheme from "@/common/hooks/useColorScheme";
 import AnimatedButton from "@/components/ui/AnimatedButton";
 import DiscardChanges from "@/components/ui/DiscardChanges";
+import { HOME_SCREEN, OPTIONS_SCREEN } from "@/constants/routes";
+import { resetNewTask, setTitleAndDesc } from "@/store/slices/newTaskSlice";
 
 const DetailsScreen = () => {
   const router = useRouter();
   const theme = useColorScheme();
+  const dispatch = useDispatch();
 
   // TODO: delete placeholders
   const [title, setTitle] = useState<string>("Clean room");
@@ -19,23 +23,28 @@ const DetailsScreen = () => {
   );
   const [showDiscardModal, setShowDiscardModal] = useState(false);
 
-  const hasTitle = title.trim() === "";
-  const hasUnsavedChanges = title.trim() !== "" || description.trim() !== "";
+  const isInputFilled = (value: string) => {
+    return value.trim() !== "";
+  };
 
   const handleGoBack = () => {
-    if (hasUnsavedChanges) {
+    if (isInputFilled(title) || isInputFilled(description)) {
       setShowDiscardModal(true);
     } else {
-      router.replace("/(tabs)/home");
+      router.replace(HOME_SCREEN);
     }
   };
 
   const handleDiscardChanges = () => {
-    router.replace("/(tabs)/home");
+    dispatch(resetNewTask());
+    router.replace(HOME_SCREEN);
   };
 
   const handleNextSlide = () => {
-    router.push("/create/OptionsScreen");
+    if (title) {
+      dispatch(setTitleAndDesc({ title, description }));
+      router.replace(OPTIONS_SCREEN);
+    }
   };
 
   return (
@@ -47,12 +56,12 @@ const DetailsScreen = () => {
         <AnimatedButton
           label="Next"
           onPress={handleNextSlide}
-          disabled={hasTitle}
+          disabled={!isInputFilled(title)}
           isLoading={false}
           style={[
             styles.nextButton,
             {
-              backgroundColor: hasTitle
+              backgroundColor: !isInputFilled(title)
                 ? "transparent"
                 : theme.colors.buttonBgColor,
             },

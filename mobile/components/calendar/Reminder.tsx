@@ -25,11 +25,6 @@ const Reminder = ({ reminder, setReminder }: ReminderProps) => {
     setIsModalOpen(false);
   };
 
-  const handleReminderSave = () => {
-    // TODO: check if the changes are made so add discard modal
-    closeReminderModal();
-  };
-
   return (
     <>
       <Text style={[styles.label, { color: theme.colors.inactive }]}>
@@ -117,7 +112,7 @@ const Reminder = ({ reminder, setReminder }: ReminderProps) => {
             styles.button,
             { backgroundColor: theme.colors.buttonBgColor },
           ]}
-          onPress={handleReminderSave}
+          onPress={closeReminderModal}
         >
           <Text
             style={[styles.buttonText, { color: theme.colors.buttonTextColor }]}

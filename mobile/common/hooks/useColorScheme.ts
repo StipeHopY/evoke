@@ -10,19 +10,19 @@ let globalTheme: Theme | null = null;
 
 const useColorScheme = () => {
   const systemTheme = _useColorScheme();
-  const [theme, setTheme] = useState<Theme>(
+  const [selectedTheme, setTheme] = useState<Theme>(
     globalTheme || systemTheme || "light"
   );
 
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
+    const newTheme = selectedTheme === "light" ? "dark" : "light";
     globalTheme = newTheme;
     setTheme(newTheme);
   };
 
   return {
-    theme,
-    colors: colors[theme],
+    selectedTheme,
+    colors: colors[selectedTheme],
     toggleTheme,
   };
 };

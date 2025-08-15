@@ -1,27 +1,19 @@
 import { useState } from "react";
 import { Calendar } from "lucide-react-native";
+import { useDispatch, useSelector } from "react-redux";
 
-import { DateStateType } from "@/types/index";
+import { TaskDateType } from "@/types/index";
 import useColorScheme from "@/common/hooks/useColorScheme";
 import SelectButton from "@/components/ui/SelectButton";
 import CalendarComponent from "@/components/calendar/Calendar";
 import { isValidDateAndDeadline } from "@/utils/dateTimeHelpers";
+import { setDate } from "@/store/slices/newTaskSlice";
+import { RootState } from "@/store/store";
 
-type checkDateProps = {
-  isValid: boolean;
-  message?: string;
-};
-
-type DateProps = {
-  setDate: React.Dispatch<React.SetStateAction<DateStateType>>;
-  date?: DateStateType;
-  deadline: DateStateType;
-};
-
-// TODO: add cancel button here and on deadline component
-
-const Date = ({ setDate, deadline }: DateProps) => {
+const Date = () => {
+  const dispatch = useDispatch();
   const theme = useColorScheme();
+  const deadline = useSelector((state: RootState) => state.newTask.deadline);
 
   const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
   const [isSelected, setIsSelected] = useState<boolean>(false);
@@ -32,24 +24,28 @@ const Date = ({ setDate, deadline }: DateProps) => {
     setError(null);
   };
 
-  const handleCalendarSave = (newDate: DateStateType) => {
-    const isDateValid = isValidDateAndDeadline(newDate, deadline);
-    console.log("isDateValid", isDateValid);
+  const closeCalendar = () => {
+    setIsOpenCalendar(false);
+    setError(null);
+  };
 
+  // TODO: I think there is some error poping up before saving
+
+  const handleCalendarSave = (newDate: TaskDateType) => {
+    if (!newDate) {
+      setError("Date is not selected.");
+      return;
+    }
+
+    const isDateValid = isValidDateAndDeadline(newDate, deadline);
     if (!isDateValid.isValid) {
       setError(isDateValid.message || "Invalid date");
       return;
     }
-
-    setDate(newDate);
+    setError(null);
+    dispatch(setDate(newDate));
     setIsSelected(true);
-    setError(null);
     closeCalendar();
-  };
-
-  const closeCalendar = () => {
-    setIsOpenCalendar(false);
-    setError(null);
   };
 
   return (
@@ -59,8 +55,9 @@ const Date = ({ setDate, deadline }: DateProps) => {
       </SelectButton>
       {isOpenCalendar && (
         <CalendarComponent
+          type="start"
           label="Select Date"
-          isOpenCalendar={isOpenCalendar}
+          isOpen={isOpenCalendar}
           onClose={closeCalendar}
           onSave={handleCalendarSave}
           error={error}

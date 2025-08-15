@@ -1,16 +1,25 @@
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
+import { useDispatch } from "react-redux";
 
 import SelectButton from "@/components/ui/SelectButton";
 import CreateLabel from "./CreateLabel";
 import { LabelType, LabelsType } from "@/types";
 import ActionModal from "./ActionModal";
+import { setLabel } from "@/store/slices/newTaskSlice";
 
 const LabelList = ({ labels }: LabelsType) => {
+  const dispatch = useDispatch();
+
   const [selectedLabel, setSelectedLabel] = useState<LabelType | null>(null);
   const [openActionModal, setOpenActionModal] = useState<boolean>(false);
 
-  const onLongPressLabel = (label: LabelType) => {
+  const handleSelectLabel = (label: LabelType) => {
+    setSelectedLabel(selectedLabel?.id === label.id ? null : label);
+    dispatch(setLabel(label));
+  };
+
+  const handleActionModal = (label: LabelType) => {
     setOpenActionModal(true);
     setSelectedLabel(label);
   };
@@ -29,10 +38,8 @@ const LabelList = ({ labels }: LabelsType) => {
             key={label.id}
             label={label.value}
             isSelected={selectedLabel?.id === label.id}
-            onPress={() =>
-              setSelectedLabel(selectedLabel?.id === label.id ? null : label)
-            }
-            onLongPress={() => onLongPressLabel(label)}
+            onPress={() => handleSelectLabel(label)}
+            onLongPress={() => handleActionModal(label)}
           />
         ))}
       </View>

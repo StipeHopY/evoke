@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
 import Modal from "./Modal";
@@ -6,16 +6,24 @@ import useColorScheme from "@/common/hooks/useColorScheme";
 
 type ErrorProps = {
   message: string | null;
+  setMessage?: (message: string | null) => void;
   isModal?: boolean;
 };
 
-const Error = ({ message, isModal = false }: ErrorProps) => {
+const Error = ({ message, setMessage, isModal = false }: ErrorProps) => {
   const [isOpen, setIsOpen] = useState(!!message);
   const theme = useColorScheme();
 
   const handleClose = () => {
     setIsOpen(false);
+    if (setMessage) {
+      setMessage(null);
+    }
   };
+
+  useEffect(() => {
+    setIsOpen(!!message);
+  }, [message]);
 
   return isModal ? (
     <Modal isOpen={isOpen} onClose={handleClose}>

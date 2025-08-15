@@ -1,127 +1,99 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { Calendar as CalendarIcon } from "lucide-react-native";
 
 import Modal from "@/components/ui/Modal";
 import useColorScheme from "@/common/hooks/useColorScheme";
-import { formatDate } from "@/utils/dateTimeHelpers";
 import TimePicker from "./TimePicker";
-import SelectButton from "@/components/ui/SelectButton";
 import DatePicker from "./DatePicker";
-import { getRoundedCurrentTime } from "@/utils/dateTimeHelpers";
-import { DateStateType, ReminderType } from "@/types/index";
 import ErrorComponent from "@/components/ui/Error";
 import Reminder from "./Reminder";
 import Repeat from "@/components/calendar/Repeat";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { defaultDate, defaultTime, defaultReminder } from "@/constants/date";
+import SelectDay from "./SelectDay";
+import {
+  TaskDateType,
+  DateType,
+  ReminderType,
+  DayValueType,
+  TimeType,
+} from "@/types/index";
 
 type CalendarProps = {
+  type: "start" | "end";
   label: string;
-  isOpenCalendar: boolean;
+  isOpen: boolean;
   onClose: () => void;
-  error?: string | null;
-  onSave: (date: DateStateType) => void;
+  error: string | null;
+  onSave: (date: TaskDateType) => void;
 };
-
-type SelectedTimeState = "Today" | "Tomorrow" | string;
-
-// TODO: try to add functionality where when user click Save button then only get the selected time from time picker
-// because right now it couses to much re-rendering
 
 const Calendar = ({
   label,
-  isOpenCalendar,
+  isOpen,
   onClose,
   error,
   onSave,
+  type,
 }: CalendarProps) => {
   const theme = useColorScheme();
-  const getCurrTime = getRoundedCurrentTime();
+  const startDate = useSelector((state: RootState) => state.newTask.date);
+  const deadline = useSelector((state: RootState) => state.newTask.deadline);
+  const selectedType = type === "start" ? startDate : deadline;
 
-  const [selectedTime, setSelectedTime] = useState<string>(
-    `${getCurrTime.hour}:${getCurrTime.minute}`
+  const [selectedDate, setSelectedDate] = useState<DateType>(
+    selectedType?.date ?? defaultDate
   );
-  const [selectedDate, setSelectedDate] = useState<SelectedTimeState>("Today");
-  const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
-  const [reminder, setReminder] = useState<ReminderType>({
-    type: "Notification",
-    reminderOffset: "At start time",
-  });
-  const [repeatDays, setRepeatDays] = useState<string[]>([]);
-
-  const selectToday = () => {
-    setSelectedDate(formatDate(new Date()));
-  };
-
-  const selectTomorrow = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    setSelectedDate(formatDate(tomorrow));
-  };
-
-  const onSelectDate = (date: Date) => {
-    setSelectedDate(formatDate(date));
-  };
+  const [selectedTime, setSelectedTime] = useState<TimeType>(
+    selectedType?.time ?? defaultTime
+  );
+  const [selectedReminder, setSelectedReminder] = useState<ReminderType>(
+    selectedType?.reminder ?? defaultReminder
+  );
+  const [selectedRepeatDays, setSelectedRepeatDays] = useState<DayValueType[]>(
+    selectedType?.repeat ?? []
+  );
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handleDateChange = () => {
-    console.log("Selected Date: ", selectedDate);
-    console.log("Selected Time: ", selectedTime);
-    const newDate = {
+    const newDate: TaskDateType = {
       date: selectedDate,
       time: selectedTime,
+      repeat: selectedRepeatDays,
+      reminder: selectedReminder,
     };
 
     onSave(newDate);
-  };
-
-  const openCalendar = () => {
-    setIsCalendarOpen(true);
   };
 
   const closeCalenadar = () => {
     setIsCalendarOpen(false);
   };
 
-  useEffect(() => {
-    console.log("Repeat Days: ", repeatDays);
-  }, [repeatDays]);
-
-  // TODO: add cancel button
-
   return (
-    <Modal isOpen={isOpenCalendar} onClose={onClose} label={label}>
+    <Modal isOpen={isOpen} onClose={onClose} label={label}>
       <View style={{ gap: 20 }}>
-        <View style={styles.calendarContainer}>
-          <SelectButton
-            label="Today"
-            isSelected={selectedDate === "Today"}
-            onPress={selectToday}
+        <SelectDay
+          setIsCalendarOpen={setIsCalendarOpen}
+          setSelectedDate={setSelectedDate}
+          selectedDate={selectedDate}
+        />
+        <Reminder
+          reminder={selectedReminder}
+          setReminder={setSelectedReminder}
+        />
+        {type === "start" && (
+          <Repeat
+            repeatDays={selectedRepeatDays}
+            setRepeatDays={setSelectedRepeatDays}
           />
-          <SelectButton
-            label="Tomorrow"
-            isSelected={selectedDate === "Tomorrow"}
-            onPress={selectTomorrow}
-          />
-          <SelectButton
-            isSelected={selectedDate !== "Today" && selectedDate !== "Tomorrow"}
-            onPress={openCalendar}
-          >
-            <CalendarIcon
-              size={20}
-              color={
-                selectedDate !== "Today" && selectedDate !== "Tomorrow"
-                  ? theme.colors.buttonTextColor
-                  : theme.colors.text
-              }
-            />
-          </SelectButton>
-        </View>
-        <Reminder reminder={reminder} setReminder={setReminder} />
-        <Repeat repeatDays={repeatDays} setRepeatDays={setRepeatDays} />
-        <TimePicker setTime={setSelectedTime} />
+        )}
+        <TimePicker selectedTime={selectedTime} setTime={setSelectedTime} />
         <DatePicker
           isOpen={isCalendarOpen}
           onClose={closeCalenadar}
-          onSelectDate={onSelectDate}
+          setSelectedDate={setSelectedDate}
         />
         <ErrorComponent message={error} />
         <Pressable
@@ -143,13 +115,6 @@ const Calendar = ({
 };
 
 const styles = StyleSheet.create({
-  calendarContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: 20,
-  },
   label: {
     fontSize: 13,
     fontWeight: "500",

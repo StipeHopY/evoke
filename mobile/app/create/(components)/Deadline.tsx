@@ -1,35 +1,39 @@
 import { useState } from "react";
 import { Target } from "lucide-react-native";
+import { useSelector, useDispatch } from "react-redux";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
 import SelectButton from "@/components/ui/SelectButton";
 import CalendarComponent from "@/components/calendar/Calendar";
-import { DateStateType } from "@/types";
+import { TaskDateType } from "@/types";
 import { isValidDateAndDeadline } from "@/utils/dateTimeHelpers";
+import { RootState } from "@/store/store";
+import { setDeadline } from "@/store/slices/newTaskSlice";
 
-type DeadlineProps = {
-  setDeadline: React.Dispatch<React.SetStateAction<DateStateType>>;
-  startDate: DateStateType;
-};
-
-const Deadline = ({ setDeadline, startDate }: DeadlineProps) => {
+const Deadline = () => {
   const theme = useColorScheme();
+  const dispatch = useDispatch();
+  const startDate = useSelector((state: RootState) => state.newTask.date);
 
   const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const openCalenadar = () => {
-    setIsOpenCalendar(true);
     setError(null);
+    setIsOpenCalendar(true);
   };
 
   const closeCalenadar = () => {
-    setIsOpenCalendar(false);
     setError(null);
+    setIsOpenCalendar(false);
   };
 
-  const handleDeadlineSave = (deadline: DateStateType) => {
+  const handleDeadlineSave = (deadline: TaskDateType) => {
+    if (!startDate) {
+      setError("Please select a start date before setting the deadline.");
+      return;
+    }
     const isDateValid = isValidDateAndDeadline(startDate, deadline);
 
     if (!isDateValid.isValid) {
@@ -37,7 +41,8 @@ const Deadline = ({ setDeadline, startDate }: DeadlineProps) => {
       return;
     }
 
-    setDeadline(deadline);
+    setError(null)
+    dispatch(setDeadline(deadline))
     setIsSelected(true);
     closeCalenadar();
   };
@@ -53,8 +58,9 @@ const Deadline = ({ setDeadline, startDate }: DeadlineProps) => {
       </SelectButton>
       {isOpenCalendar && (
         <CalendarComponent
+          type="end"
           label="Select Deadline"
-          isOpenCalendar={isOpenCalendar}
+          isOpen={isOpenCalendar}
           onClose={closeCalenadar}
           onSave={handleDeadlineSave}
           error={error}

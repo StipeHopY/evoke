@@ -16,6 +16,8 @@ import AttachedItem from "./AttachedItem";
 
 const screenHeight = Dimensions.get("window").height;
 
+// NOTES: this file is not importing anywhere
+
 const AttachToItem = () => {
   const theme = useColorScheme();
   const [isSelected, setIsSelected] = useState<boolean>(false);

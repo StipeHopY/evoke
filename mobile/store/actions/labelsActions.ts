@@ -9,15 +9,11 @@ import {
   removeLabel,
   updateLabel,
 } from "@/store/slices/labelsSlice";
-import { getUser } from "@/store/slices/userSlice";
+import { setUser } from "@/store/slices/userSlice";
 import { LabelType } from "@/types";
 import { MAX_LABELS, defaultLabels } from "@/constants/labels";
 import { handleError } from "@/utils/handleError";
-import { UserType } from "@/types";
-
-export type ActionType = {
-  error: string | null;
-};
+import { UserType, ActionType } from "@/types";
 
 export const getLabelsAction =
   () =>
@@ -34,14 +30,14 @@ export const getLabelsAction =
 
       if (!user.hasDownloadedDefaultLabels) {
         dispatch(getLabels(defaultLabels));
-        
+
         const updatedUser = {
           ...user,
           hasDownloadedDefaultLabels: true,
           updatedAt: new Date().toISOString(),
         };
         await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
-        dispatch(getUser(user));
+        dispatch(setUser(user));
 
         return {
           error: null,
@@ -99,7 +95,6 @@ export const createLabelAction =
       }
 
       if (labels.length >= MAX_LABELS) {
-        console.log("Its more than 20")
         return {
           error: `You can only have up to ${MAX_LABELS} labels.`,
         };

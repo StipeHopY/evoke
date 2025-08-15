@@ -2,20 +2,38 @@ import { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
-import { getRoundedCurrentTime } from "@/utils/dateTimeHelpers";
+import { minutes } from "@/constants/date";
+import { TimeType } from "@/types";
 
 type TimePickerProps = {
-  setTime: (time: string) => void;
+  selectedTime: TimeType;
+  setTime: (time: TimeType) => void;
 };
 
-const TimePicker = ({ setTime }: TimePickerProps) => {
-  const currentTime = getRoundedCurrentTime();
-  const [hour, setHour] = useState(currentTime.hour);
-  const [minute, setMinute] = useState(currentTime.minute);
+const TimePicker = ({ selectedTime, setTime }: TimePickerProps) => {
+  const now = new Date();
+
+  const [hour, setHour] = useState<number>(
+    selectedTime?.hour ?? now.getHours()
+  );
+  const [minute, setMinute] = useState<number>(
+    selectedTime?.minute ?? now.getMinutes()
+  );
 
   useEffect(() => {
-    setTime(`${hour}:${minute}`);
-  }, [hour, minute]);
+    setHour(selectedTime?.hour ?? now.getHours());
+    setMinute(selectedTime?.minute ?? now.getMinutes());
+  }, [selectedTime]);
+
+  const handleChangeHour = (newHour: number) => {
+    setHour(newHour);
+    setTime({ hour: newHour, minute });
+  };
+
+  const handleChangeMinute = (newMinute: number) => {
+    setMinute(newMinute);
+    setTime({ hour, minute: newMinute });
+  };
 
   return (
     <View style={styles.container}>
@@ -23,20 +41,28 @@ const TimePicker = ({ setTime }: TimePickerProps) => {
         <Picker
           style={styles.picker}
           selectedValue={hour}
-          onValueChange={setHour}
+          onValueChange={(value) => handleChangeHour(Number(value))}
         >
-          {Array.from({ length: 24 }, (_, i) => {
-            const h = i.toString().padStart(2, "0");
-            return <Picker.Item key={h} label={h} value={h} />;
-          })}
+          {Array.from({ length: 24 }, (_, i) => (
+            <Picker.Item
+              key={i}
+              label={String(i).padStart(2, "0")}
+              value={i} // numeric value
+            />
+          ))}
         </Picker>
+
         <Picker
           style={styles.picker}
           selectedValue={minute}
-          onValueChange={setMinute}
+          onValueChange={(value) => handleChangeMinute(Number(value))}
         >
-          {["00", "15", "30", "45"].map((m) => (
-            <Picker.Item key={m} label={m} value={m} />
+          {minutes.map((m) => (
+            <Picker.Item
+              key={m}
+              label={String(m).padStart(2, "0")}
+              value={Number(m)} // numeric value
+            />
           ))}
         </Picker>
       </View>
@@ -58,11 +84,6 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: 100,
-  },
-  warning: {
-    fontSize: 14,
-    textAlign: "center",
-    marginTop: 4,
   },
 });
 

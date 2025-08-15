@@ -2,23 +2,23 @@ import { Dispatch } from "redux";
 import { nanoid } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { UserType } from "@/types";
-import { createUser, getUser } from "@/store/slices/userSlice";
+import { UserType, ActionType } from "@/types";
+import { setUser, clearUser } from "@/store/slices/userSlice";
 import { handleError } from "@/utils/handleError";
-
-type ActionType = {
-  error: string | null;
-};
 
 export const getUserAction =
   () =>
   async (dispatch: Dispatch): Promise<ActionType> => {
     try {
       const userItem = await AsyncStorage.getItem("user");
-      if (userItem) {
-        const user = JSON.parse(userItem);
-        dispatch(getUser(user));
+      if (!userItem) {
+        return {
+          error: "You are logged out",
+        };
       }
+
+      const user = JSON.parse(userItem);
+      dispatch(setUser(user));
       return {
         error: null,
       };
@@ -43,12 +43,24 @@ export const createUserAction =
       };
 
       await AsyncStorage.setItem("user", JSON.stringify(createdUser));
-      dispatch(createUser(createdUser));
+      dispatch(setUser(createdUser));
       return { error: null };
     } catch (err) {
       const error = handleError(err, "Failed to create user");
       return {
         error,
       };
+    }
+  };
+
+export const deleteUserAction =
+  () =>
+  async (dispatch: Dispatch): Promise<ActionType> => {
+    try {
+      await AsyncStorage.removeItem("user");
+      dispatch(clearUser());
+      return { error: null };
+    } catch (err) {
+      return { error: handleError(err, "Failed to delete user") };
     }
   };
