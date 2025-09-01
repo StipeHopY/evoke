@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-import { LabelType } from "@/types";
+import { LabelType } from "@/db/database";
 
 const initialState: LabelType[] = [];
 

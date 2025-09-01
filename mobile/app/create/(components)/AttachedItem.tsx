@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import { Check, Square, SquareCheck } from "lucide-react-native";
+import { Text, StyleSheet, Pressable } from "react-native";
+import { Square, SquareCheck } from "lucide-react-native";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
 

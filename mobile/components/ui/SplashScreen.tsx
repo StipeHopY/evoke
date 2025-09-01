@@ -6,7 +6,7 @@ import whiteIcon from "@/assets/images/evoke-icon-loader-white.png";
 import useColorScheme from "@/common/hooks/useColorScheme";
 
 const SplashScreen = () => {
-  const { theme, colors } = useColorScheme();
+  const theme = useColorScheme();
   const fadeAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const SplashScreen = () => {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <Animated.View
         style={{
@@ -28,7 +28,7 @@ const SplashScreen = () => {
       >
         <Image
           style={styles.image}
-          source={theme === "light" ? blackIcon : whiteIcon}
+          source={theme.selectedTheme === "light" ? blackIcon : whiteIcon}
           resizeMode="cover"
         />
       </Animated.View>

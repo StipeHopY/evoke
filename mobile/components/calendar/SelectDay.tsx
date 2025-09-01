@@ -1,15 +1,15 @@
 import { View, StyleSheet } from "react-native";
 import { CalendarIcon } from "lucide-react-native";
 
-import SelectButton from "../ui/SelectButton";
+import SelectButton from "@/components/ui/SelectButton";
 import useColorScheme from "@/common/hooks/useColorScheme";
-import { formatDate } from "@/utils/dateTimeHelpers";
-import { DateType } from "@/types";
+import { getRawDate, formatDateIntoUI } from "@/utils/dateUtils";
+import { RawDateType } from "@/types/date";
 
 type SelectDayType = {
   setIsCalendarOpen: (isCalendarOpen: boolean) => void;
-  setSelectedDate: (selectedDate: DateType) => void;
-  selectedDate: DateType;
+  setSelectedDate: (selectedDate: RawDateType) => void;
+  selectedDate: RawDateType;
 };
 
 const SelectDay = ({
@@ -19,41 +19,41 @@ const SelectDay = ({
 }: SelectDayType) => {
   const theme = useColorScheme();
   const selectToday = () => {
-    setSelectedDate(formatDate(new Date()));
+    setSelectedDate(getRawDate(new Date()));
   };
 
   const selectTomorrow = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    setSelectedDate(formatDate(tomorrow));
+    setSelectedDate(getRawDate(tomorrow));
   };
 
   const openCalendar = () => {
     setIsCalendarOpen(true);
   };
 
+  const dateUI = formatDateIntoUI(selectedDate);
+
   return (
     <View style={styles.calendarContainer}>
       <SelectButton
         label="Today"
-        isSelected={selectedDate.ui === "Today"}
+        isSelected={dateUI === "Today"}
         onPress={selectToday}
       />
       <SelectButton
         label="Tomorrow"
-        isSelected={selectedDate.ui === "Tomorrow"}
+        isSelected={dateUI === "Tomorrow"}
         onPress={selectTomorrow}
       />
       <SelectButton
-        isSelected={
-          selectedDate.ui !== "Today" && selectedDate.ui !== "Tomorrow"
-        }
+        isSelected={dateUI !== "Today" && dateUI !== "Tomorrow"}
         onPress={openCalendar}
       >
         <CalendarIcon
           size={20}
           color={
-            selectedDate.ui !== "Today" && selectedDate.ui !== "Tomorrow"
+            dateUI !== "Today" && dateUI !== "Tomorrow"
               ? theme.colors.buttonTextColor
               : theme.colors.text
           }

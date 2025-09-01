@@ -1,12 +1,4 @@
-import React, { useEffect, useRef } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Animated,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import {
   ClipboardList,
   FileBadge,
@@ -15,9 +7,9 @@ import {
   BellRing,
 } from "lucide-react-native";
 
-import { Theme } from "@/types";
 import useColorScheme from "@/common/hooks/useColorScheme";
 import SelectButton from "@/components/ui/SelectButton";
+import ScrollContainer from "@/components/ui/ScrollContainer";
 
 type TypeSelectorSliderProps = {
   selectedValue: string | null;
@@ -43,11 +35,7 @@ const TypeSelectorSlider = ({
       <Text style={[styles.label, { color: theme.colors.inactive }]}>
         Type of item
       </Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 12, paddingVertical: 10 }}
-      >
+      <ScrollContainer type="row">
         {Options.map((option) => (
           <SelectButton
             key={option.label}
@@ -57,7 +45,7 @@ const TypeSelectorSlider = ({
             onPress={() => setSelectedValue(option.label)}
           />
         ))}
-      </ScrollView>
+      </ScrollContainer>
     </View>
   );
 };

@@ -12,7 +12,12 @@ const ScreenContainer = ({ children }: ScreenContainerType) => {
   const theme = useColorScheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background, paddingTop: top }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background, paddingTop: top },
+      ]}
+    >
       {children}
     </View>
   );

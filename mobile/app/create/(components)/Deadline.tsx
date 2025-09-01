@@ -5,15 +5,16 @@ import { useSelector, useDispatch } from "react-redux";
 import useColorScheme from "@/common/hooks/useColorScheme";
 import SelectButton from "@/components/ui/SelectButton";
 import CalendarComponent from "@/components/calendar/Calendar";
-import { TaskDateType } from "@/types";
-import { isValidDateAndDeadline } from "@/utils/dateTimeHelpers";
+import { handleStartValues, isValidStartAndDeadline } from "@/utils/dateUtils";
 import { RootState } from "@/store/store";
 import { setDeadline } from "@/store/slices/newTaskSlice";
+import { TaskDeadlineType } from "@/types/date";
 
 const Deadline = () => {
   const theme = useColorScheme();
   const dispatch = useDispatch();
-  const startDate = useSelector((state: RootState) => state.newTask.date);
+  const newTask = useSelector((state: RootState) => state.newTask);
+  const startDate = handleStartValues(newTask);
 
   const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
   const [isSelected, setIsSelected] = useState<boolean>(false);
@@ -29,20 +30,21 @@ const Deadline = () => {
     setIsOpenCalendar(false);
   };
 
-  const handleDeadlineSave = (deadline: TaskDateType) => {
+  const handleDeadlineSave = (deadline: TaskDeadlineType) => {
     if (!startDate) {
       setError("Please select a start date before setting the deadline.");
       return;
     }
-    const isDateValid = isValidDateAndDeadline(startDate, deadline);
+
+    const isDateValid = isValidStartAndDeadline(startDate, deadline);
 
     if (!isDateValid.isValid) {
       setError(isDateValid.message || "Invalid date");
       return;
     }
 
-    setError(null)
-    dispatch(setDeadline(deadline))
+    setError(null);
+    dispatch(setDeadline(deadline));
     setIsSelected(true);
     closeCalenadar();
   };

@@ -6,35 +6,35 @@ import { useSelector } from "react-redux";
 import Modal from "@/components/ui/Modal";
 import useColorScheme from "@/common/hooks/useColorScheme";
 import { RootState } from "@/store/store";
-import { DateType } from "@/types";
-import { formatDate } from "@/utils/dateTimeHelpers";
+import { getRawDate } from "@/utils/dateUtils";
+import { RawDateType } from "@/types/date";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  setSelectedDate: (selectedDate: DateType) => void;
+  setSelectedDate: (selectedDate: RawDateType) => void;
 };
 
 const DatePicker = ({ isOpen, onClose, setSelectedDate }: Props) => {
   const theme = useColorScheme();
-  const taskDate = useSelector((state: RootState) => state.newTask.date);
+  const startYear = useSelector((state: RootState) => state.newTask.startYear);
+  const startMonth = useSelector((state: RootState) => state.newTask.startMonth);
+  const startDay = useSelector((state: RootState) => state.newTask.startDay);
 
   const now = new Date();
   const currentDay = now.getDate();
   const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
 
-  const [day, setDay] = useState<number>(taskDate?.date.raw.day ?? currentDay);
+  const [day, setDay] = useState<number>(startDay ?? currentDay);
   const [month, setMonth] = useState<number>(
-    taskDate?.date.raw.month ?? currentMonth
+    startMonth ?? currentMonth
   );
-  const [year, setYear] = useState<number>(
-    taskDate?.date.raw.year ?? currentYear
-  );
+  const [year, setYear] = useState<number>(startYear ?? currentYear);
 
   const handleConfirm = () => {
     const date = new Date(year, month - 1, day);
-    setSelectedDate(formatDate(date));
+    setSelectedDate(getRawDate(date));
     onClose();
   };
 

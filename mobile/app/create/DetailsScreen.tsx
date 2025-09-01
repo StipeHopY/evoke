@@ -16,11 +16,8 @@ const DetailsScreen = () => {
   const theme = useColorScheme();
   const dispatch = useDispatch();
 
-  // TODO: delete placeholders
   const [title, setTitle] = useState<string>("Clean room");
-  const [description, setDescription] = useState<string>(
-    "You shold clean your room!"
-  );
+  const [description, setDescription] = useState<string>("You should clean your room.");
   const [showDiscardModal, setShowDiscardModal] = useState(false);
 
   const isInputFilled = (value: string) => {
@@ -58,14 +55,11 @@ const DetailsScreen = () => {
           onPress={handleNextSlide}
           disabled={!isInputFilled(title)}
           isLoading={false}
-          style={[
-            styles.nextButton,
-            {
-              backgroundColor: !isInputFilled(title)
-                ? "transparent"
-                : theme.colors.buttonBgColor,
-            },
-          ]}
+          style={{
+            backgroundColor: !isInputFilled(title)
+              ? "transparent"
+              : theme.colors.buttonBgColor,
+          }}
         />
       </View>
       <View style={styles.slide}>
@@ -114,11 +108,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
-  },
-  nextButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 30,
   },
   slide: {
     flex: 1,

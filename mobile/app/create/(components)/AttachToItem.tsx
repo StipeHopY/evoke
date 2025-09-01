@@ -1,18 +1,12 @@
 import { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Dimensions,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
 import { Plus } from "lucide-react-native";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
 import SelectButton from "@/components/ui/SelectButton";
 import Modal from "@/components/ui/Modal";
 import AttachedItem from "./AttachedItem";
+import ScrollContainer from "@/components/ui/ScrollContainer";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -56,10 +50,7 @@ const AttachToItem = () => {
           label="Attach to Item"
         >
           <View style={styles.container}>
-            <ScrollView
-              contentContainerStyle={styles.itemsContainer}
-              style={styles.scroll}
-            >
+            <ScrollContainer type="row">
               <AttachedItem />
               <AttachedItem />
               <AttachedItem />
@@ -72,7 +63,7 @@ const AttachToItem = () => {
               <AttachedItem />
               <AttachedItem />
               <AttachedItem />
-            </ScrollView>
+            </ScrollContainer>
             <View style={{ flexDirection: "row", gap: 10 }}>
               <Pressable
                 onPress={handleSaveButtonPress}

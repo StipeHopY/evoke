@@ -2,7 +2,8 @@ import { Dispatch } from "redux";
 import { nanoid } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { UserType, ActionType } from "@/types";
+import { ActionType } from "@/types";
+import { UserType } from "@/types/user";
 import { setUser, clearUser } from "@/store/slices/userSlice";
 import { handleError } from "@/utils/handleError";
 

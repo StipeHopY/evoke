@@ -15,6 +15,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import ErrorComponent from "@/components/ui/Error";
 import { createTaskAction } from "@/store/actions/tasksActions";
 import { DETAILS_SCREEN, HOME_SCREEN } from "@/constants/routes";
+import Repeat from "@/components/calendar/Repeat";
 
 const OptionsScreen = () => {
   const theme = useColorScheme();
@@ -23,7 +24,7 @@ const OptionsScreen = () => {
 
   const newTask = useSelector((state: RootState) => state.newTask);
 
-  const [isCreateDisabled, setIsCreatedDisabled] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleGoBack = () => {
@@ -32,11 +33,10 @@ const OptionsScreen = () => {
 
   const handleCreateItem = async () => {
     try {
-      setIsCreatedDisabled(true);
+      setLoading(true);
       const { error } = await dispatch(createTaskAction(newTask));
       if (error) {
         setError(error);
-        setIsCreatedDisabled(false);
         return;
       }
 
@@ -44,6 +44,8 @@ const OptionsScreen = () => {
       router.replace(HOME_SCREEN);
     } catch (err) {
       setError("Failed to create task");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,13 +58,13 @@ const OptionsScreen = () => {
         <AnimatedButton
           label="Create"
           onPress={handleCreateItem}
-          disabled={isCreateDisabled}
+          disabled={loading}
           isLoading={false}
           value="next"
           style={[
             styles.createButton,
             {
-              backgroundColor: isCreateDisabled
+              backgroundColor: loading
                 ? "transparent"
                 : theme.colors.buttonBgColor,
             },
@@ -79,6 +81,7 @@ const OptionsScreen = () => {
             <Date />
             <Deadline />
             <HighPriority />
+            <Repeat />
           </View>
         </View>
       </View>

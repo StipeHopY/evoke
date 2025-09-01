@@ -1,94 +1,18 @@
-✅ Task
-Current options:
+-user can write/upload current progress when creating a task, then after can remind himself with it 
 
-Date
+| Factor              | Rule / Condition                           | Points       |
+| ------------------- | ------------------------------------------ | ------------ |
+| **Label**           | Every task must have 1 label               | +1           |
+| **Repeat**          | 1–4 selected days                          | +1           |
+|                     | Weekdays (Mon–Fri)                         | +2           |
+|                     | Everyday (7 days)                          | +3           |
+| **Duration (span)** | 1 hour                                     | +1           |
+|                     | 2 hours                                    | +2           |
+|                     | 3 hours                                    | +3           |
+|                     | 4 hours                                    | +4           |
+|                     | 5+ hours (cap)                             | +5           |
+| **High Priority**   | If marked high priority                    | +1           |
+| **Streak Bonus**    | Each consecutive completion (after 2 days) | +0.5 per day |
 
-Deadline
 
-Attach to Item
-
-High Priority
-
-Suggested Additions:
-
-Subtasks (checklist)
-
-Recurring (daily, weekly, custom)
-
-Estimated Time (how long it might take)
-
-Status (Not Started, In Progress, Done)
-
-Assigned To (if you support team features)
-
-Tags (for filtering/searching)
-
-📝 Note
-Usually for quick thoughts, journal entries, or reminders.
-
-Suggested Options:
-
-Pin Note (keep it at the top)
-
-Color Label (visual grouping)
-
-Text Formatting (bold, list, headings)
-
-Attach to Item (e.g. a Task or Project)
-
-Voice Note (optional audio recording)
-
-Add Images or Files
-
-Remind Me Later (turn into a time-based alert)
-
-📁 Project
-Represents a bigger scope, potentially contains multiple Tasks, Goals, and Notes.
-
-Suggested Options:
-
-Start Date / End Date
-
-Progress Tracker (percentage or kanban-style)
-
-Milestones
-
-Team Members / Collaborators
-
-Link Items (Tasks, Notes, Goals under the project)
-
-Color or Icon (for easy visual ID)
-
-Priority Level (Low, Medium, High)
-
-Status (Planning, Active, On Hold, Completed)
-
-🎯 Goal
-Goals are purpose-driven and time-sensitive, often spanning multiple Projects or Tasks.
-
-Suggested Options:
-
-Target Date
-
-Motivation / Why (text field for user's personal reason)
-
-Progress Steps (like mini-goals)
-
-Habit Tracker (daily/weekly actions toward goal)
-
-Attach Related Items (Projects, Tasks, Notes)
-
-Category or Life Area (e.g. Health, Career, Personal)
-
-Celebration / Reward (custom reward for completion)
-
-🔄 Shared Options (for all types):
-Attach to Item (very useful for linking)
-
-Tags or Labels
-
-Reminders
-
-Priority Level
-
-Notes or Comments field
+Each level unlocks a title or badge (e.g., “Beginner → Consistent → Achiever → Master”).

@@ -13,8 +13,8 @@ import { UseFormHandleSubmit } from "react-hook-form";
 import useColorScheme from "@/common/hooks/useColorScheme";
 
 type UsernameType = {
-  username: string
-}
+  username: string;
+};
 
 type AnimatedButtonProps = {
   label: string;
@@ -98,12 +98,13 @@ const AnimatedButton = ({
 const styles = StyleSheet.create({
   button: {
     width: "100%",
-    height: 50,
     backgroundColor: "red",
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
   buttonText: {
     fontSize: 16,

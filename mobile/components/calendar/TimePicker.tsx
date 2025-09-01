@@ -4,6 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 
 import { minutes } from "@/constants/date";
 import { TimeType } from "@/types";
+import useColorScheme from "@/common/hooks/useColorScheme";
 
 type TimePickerProps = {
   selectedTime: TimeType;
@@ -11,6 +12,7 @@ type TimePickerProps = {
 };
 
 const TimePicker = ({ selectedTime, setTime }: TimePickerProps) => {
+  const theme = useColorScheme();
   const now = new Date();
 
   const [hour, setHour] = useState<number>(
@@ -47,7 +49,8 @@ const TimePicker = ({ selectedTime, setTime }: TimePickerProps) => {
             <Picker.Item
               key={i}
               label={String(i).padStart(2, "0")}
-              value={i} // numeric value
+              value={i}
+              color={theme.colors.text}
             />
           ))}
         </Picker>
@@ -61,7 +64,8 @@ const TimePicker = ({ selectedTime, setTime }: TimePickerProps) => {
             <Picker.Item
               key={m}
               label={String(m).padStart(2, "0")}
-              value={Number(m)} // numeric value
+              value={Number(m)}
+              color={theme.colors.text}
             />
           ))}
         </Picker>

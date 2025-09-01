@@ -1,19 +1,21 @@
 import { Dispatch } from "redux";
 import { nanoid } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { eq } from "drizzle-orm";
 
 import {
   getLabels,
-  createDefaultLabels,
   createLabel,
   removeLabel,
   updateLabel,
 } from "@/store/slices/labelsSlice";
 import { setUser } from "@/store/slices/userSlice";
-import { LabelType } from "@/types";
-import { MAX_LABELS, defaultLabels } from "@/constants/labels";
+import { LabelCustomType } from "@/types";
+import { MAX_LABELS, defaultLabels } from "@/constants/data";
 import { handleError } from "@/utils/handleError";
-import { UserType, ActionType } from "@/types";
+import { ActionType } from "@/types";
+import { UserType } from "@/types/user";
+import { db, labels } from "@/db/database";
 
 export const getLabelsAction =
   () =>
@@ -29,6 +31,7 @@ export const getLabelsAction =
       const user: UserType = JSON.parse(userItem);
 
       if (!user.hasDownloadedDefaultLabels) {
+        await db.insert(labels).values(defaultLabels);
         dispatch(getLabels(defaultLabels));
 
         const updatedUser = {
@@ -44,11 +47,8 @@ export const getLabelsAction =
         };
       }
 
-      const existingLabels = await AsyncStorage.getItem("labels");
-      if (existingLabels) {
-        const labels: LabelType[] = JSON.parse(existingLabels);
-        dispatch(getLabels(labels));
-      }
+      const existingLabels = await db.select().from(labels).limit(MAX_LABELS);
+      dispatch(getLabels(existingLabels));
       return {
         error: null,
       };
@@ -60,33 +60,27 @@ export const getLabelsAction =
     }
   };
 
-export const createDefaultLabelsAction =
-  (labels: LabelType[]) =>
-  async (dispatch: Dispatch): Promise<ActionType> => {
-    try {
-      await AsyncStorage.setItem("labels", JSON.stringify(labels));
-      dispatch(createDefaultLabels(labels));
-      return {
-        error: null,
-      };
-    } catch (err) {
-      const error = handleError(err, "Failed to create labels");
-      return {
-        error,
-      };
-    }
-  };
-
 export const createLabelAction =
-  (value: string) =>
+  (labelValue: string) =>
   async (dispatch: Dispatch): Promise<ActionType> => {
     try {
-      const existingLabels = await AsyncStorage.getItem("labels");
-      const labels: LabelType[] = existingLabels
-        ? JSON.parse(existingLabels)
-        : [];
+      if (!labelValue) {
+        return {
+          error: "Label value is required",
+        };
+      }
 
-      const isDuplicate = labels.some((label) => label.value === value.trim());
+      const storedLabels = await db.select().from(labels);
+
+      if (storedLabels.length >= MAX_LABELS) {
+        return {
+          error: `You can only have up to ${MAX_LABELS} labels.`,
+        };
+      }
+
+      const isDuplicate = storedLabels.some(
+        (label) => label.value === labelValue
+      );
 
       if (isDuplicate) {
         return {
@@ -94,19 +88,12 @@ export const createLabelAction =
         };
       }
 
-      if (labels.length >= MAX_LABELS) {
-        return {
-          error: `You can only have up to ${MAX_LABELS} labels.`,
-        };
-      }
-
       const newLabel = {
         id: nanoid(),
-        value,
+        value: labelValue,
       };
 
-      labels.unshift(newLabel);
-      await AsyncStorage.setItem("labels", JSON.stringify(labels));
+      await db.insert(labels).values(newLabel);
       dispatch(createLabel(newLabel));
       return {
         error: null,
@@ -123,13 +110,15 @@ export const removeLabelAction =
   (labelId: string) =>
   async (dispatch: Dispatch): Promise<ActionType> => {
     try {
-      const existingLabels = await AsyncStorage.getItem("labels");
-      if (existingLabels) {
-        const labels: LabelType[] = JSON.parse(existingLabels);
-        const updatedLabels = labels.filter((label) => label.id !== labelId);
-        await AsyncStorage.setItem("labels", JSON.stringify(updatedLabels));
-        dispatch(removeLabel(labelId));
+      if (!labelId) {
+        return {
+          error: "Label ID is required",
+        };
       }
+
+      await db.delete(labels).where(eq(labels.id, labelId));
+      dispatch(removeLabel(labelId));
+
       return {
         error: null,
       };
@@ -142,39 +131,35 @@ export const removeLabelAction =
   };
 
 export const updateLabelAction =
-  (oldLabel: LabelType, newLabelValue: string) =>
+  (oldLabel: LabelCustomType, newLabelValue: string) =>
   async (dispatch: Dispatch): Promise<ActionType> => {
     try {
-      const existingLabels = await AsyncStorage.getItem("labels");
-      if (existingLabels) {
-        const labels: LabelType[] = JSON.parse(existingLabels);
+      const isDuplicate = await db
+        .select()
+        .from(labels)
+        .where(eq(labels.value, newLabelValue));
 
-        const isDuplicate = labels.some(
-          (label) =>
-            label.value === newLabelValue && label.value !== oldLabel.value
-        );
-
-        if (isDuplicate) {
-          return {
-            error: "Label already exists",
-          };
-        }
-
-        const updatedLabels = labels.map((label) =>
-          label.value === oldLabel.value
-            ? { ...label, value: newLabelValue }
-            : label
-        );
-
-        await AsyncStorage.setItem("labels", JSON.stringify(updatedLabels));
-        dispatch(updateLabel({ oldLabel, newLabelValue }));
+      if (isDuplicate) {
         return {
-          error: null,
+          error: "Label already exists",
         };
       }
 
+      const updatedLabel = await db
+        .update(labels)
+        .set({ value: newLabelValue })
+        .where(eq(labels.id, oldLabel.id));
+
+      if (!updatedLabel) {
+        return {
+          error: "Failed to update label",
+        };
+      }
+
+      dispatch(updateLabel({ oldLabel, newLabelValue }));
+
       return {
-        error: "No labels found",
+        error: null,
       };
     } catch (err) {
       const error = handleError(err, "Failed to update label");

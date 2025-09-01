@@ -1,23 +1,21 @@
 import {
-  DateType,
   DayLabelType,
   DayValueType,
   MinuteType,
+  RawDateType,
   ReminderType,
   TimeType,
 } from "@/types";
-import { getRoundedCurrentTime } from "@/utils/dateTimeHelpers";
+import { DaysOfWeekType } from "@/types/date";
+import { getRoundedCurrentTime } from "@/utils/dateUtils";
 
 const now = new Date();
 const roundedCurrTime = getRoundedCurrentTime();
 
-export const defaultDate: DateType = {
-  raw: {
-    day: now.getDate(),
-    month: now.getMonth() + 1,
-    year: now.getFullYear(),
-  },
-  ui: "Today",
+export const defaultDate: RawDateType = {
+  day: now.getDate(),
+  month: now.getMonth() + 1,
+  year: now.getFullYear(),
 };
 
 export const defaultTime: TimeType = {
@@ -30,12 +28,7 @@ export const defaultReminder: ReminderType = {
   reminderOffset: "At start time",
 };
 
-type daysOfWeekType = {
-  label: DayLabelType;
-  value: DayValueType;
-}[];
-
-export const daysOfWeek: daysOfWeekType = [
+export const weekdays: DaysOfWeekType = [
   { label: "Every Monday", value: "Mon" },
   { label: "Every Tuesday", value: "Tue" },
   { label: "Every Wednesday", value: "Wed" },
@@ -44,7 +37,5 @@ export const daysOfWeek: daysOfWeekType = [
   { label: "Every Saturday", value: "Sat" },
   { label: "Every Sunday", value: "Sun" },
 ];
-
-export const weekdays: DayValueType[] = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
 export const minutes: MinuteType[] = ["00", "15", "30", "45"];

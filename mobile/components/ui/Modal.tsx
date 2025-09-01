@@ -22,13 +22,29 @@ type Props = {
   label?: string;
 };
 
+// TODO: this RNModal has already built-in animations, consider using them
+
 const Modal = ({ isOpen, onClose, children, label }: Props) => {
   const theme = useColorScheme();
 
-  const [modalVisible, setModalVisible] = useState(false);
   const translateY = useRef(new Animated.Value(screenHeight)).current;
   const dragY = useRef(new Animated.Value(0)).current;
   const pan = Animated.add(translateY, dragY);
+
+  const handleOnCloseModal = () => {
+    onClose();
+    handleAnimationClose();
+  };
+
+  const handleAnimationClose = () => {
+    Animated.timing(translateY, {
+      toValue: screenHeight,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      dragY.setValue(0);
+    });
+  };
 
   const panResponder = useRef(
     PanResponder.create({
@@ -40,7 +56,7 @@ const Modal = ({ isOpen, onClose, children, label }: Props) => {
       },
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dy > 100) {
-          handleAnimationClose();
+          handleOnCloseModal();
         } else {
           Animated.spring(dragY, {
             toValue: 0,
@@ -53,14 +69,6 @@ const Modal = ({ isOpen, onClose, children, label }: Props) => {
 
   useEffect(() => {
     if (isOpen) {
-      setModalVisible(true);
-    } else {
-      handleAnimationClose();
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (modalVisible) {
       dragY.setValue(0);
       translateY.setValue(screenHeight);
       Animated.timing(translateY, {
@@ -69,31 +77,19 @@ const Modal = ({ isOpen, onClose, children, label }: Props) => {
         useNativeDriver: true,
       }).start();
     }
-  }, [modalVisible]);
-
-  const handleAnimationClose = () => {
-    Animated.timing(translateY, {
-      toValue: screenHeight,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      dragY.setValue(0);
-      setModalVisible(false);
-      onClose();
-    });
-  };
+  }, [isOpen]);
 
   // TODO: check if animations are always rendering even if isOpen is false
 
   return (
     <RNModal
-      transparent
-      visible={modalVisible}
+      transparent={true}
+      visible={isOpen}
       animationType="none"
-      onRequestClose={handleAnimationClose}
+      onRequestClose={handleOnCloseModal}
     >
       <View style={styles.overlay}>
-        <Pressable style={styles.background} onPress={handleAnimationClose} />
+        <Pressable style={styles.background} onPress={handleOnCloseModal} />
         <Animated.View
           style={[
             styles.modalContainer,

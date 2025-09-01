@@ -12,7 +12,7 @@ import { X } from "lucide-react-native";
 
 import Modal from "@/components/ui/Modal";
 import useColorScheme from "@/common/hooks/useColorScheme";
-import { LabelType } from "@/types";
+import { LabelCustomType } from "@/types/task"; 
 import Error from "@/components/ui/Error";
 import { AppDispatch } from "@/store/store";
 import {
@@ -23,7 +23,7 @@ import {
 interface ActionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedLabel: LabelType | null;
+  selectedLabel: LabelCustomType | null;
 }
 
 const screenHeight = Dimensions.get("window").height;

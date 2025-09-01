@@ -1,69 +1,82 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { Check } from "lucide-react-native";
+import { CalendarSync, Check } from "lucide-react-native";
+import { useDispatch, useSelector } from "react-redux";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
 import SelectButton from "../ui/SelectButton";
 import Modal from "@/components/ui/Modal";
-import { daysOfWeek, weekdays } from "@/constants/date";
+import { weekdays } from "@/constants/date";
 import { DayValueType } from "@/types";
-import { formatRepeatLabel } from "@/utils/dateTimeHelpers";
+import { formatRepeatLabel } from "@/utils/dateUtils";
+import { RootState } from "@/store/store";
+import { setRepeat } from "@/store/slices/newTaskSlice";
 
-type RepeatProps = {
-  setRepeatDays: React.Dispatch<React.SetStateAction<DayValueType[]>>;
-  repeatDays: DayValueType[];
-};
-
-// NEXT: save task on mobile
-
-const Repeat = ({ setRepeatDays, repeatDays }: RepeatProps) => {
+const Repeat = () => {
   const theme = useColorScheme();
+  const dispatch = useDispatch();
+
+  const repeat = useSelector((state: RootState) => state.newTask.repeat);
 
   const [openModal, setOpenModal] = useState(false);
-  const [label, setLabel] = useState("Never");
-  const [tempSelected, setTempSelected] = useState<DayValueType[]>(repeatDays);
+  const [label, setLabel] = useState("Repeat");
+  const [selectedRepeatDays, setSelectedRepeatDays] = useState<DayValueType[]>(
+    repeat ?? []
+  );
 
-  const onPress = () => {
-    setTempSelected(repeatDays);
-    setOpenModal(true);
-  };
-
-  const onSelect = (dayValue: DayValueType) => {
-    setTempSelected((prev) =>
-      prev.includes(dayValue)
-        ? prev.filter((d) => d !== dayValue)
-        : [...prev, dayValue]
-    );
-  };
-
-  const onClose = () => {
-    setRepeatDays(tempSelected);
-    setOpenModal(false);
-
-    const sortedDays = [...tempSelected].sort();
-    const repeatLabel = formatRepeatLabel(sortedDays, weekdays);
-
+  const handleRepeatLabel = (days: DayValueType[]) => {
+    const repeatLabel = formatRepeatLabel(days, weekdays);
     setLabel(repeatLabel);
   };
 
+  const onSelect = (dayValue: DayValueType) => {
+    setSelectedRepeatDays((prev) => {
+      const updated = prev.includes(dayValue)
+        ? prev.filter((d) => d !== dayValue)
+        : [...prev, dayValue];
+
+      const weekOrder = weekdays.map((day) => day.value);
+      return [...updated].sort(
+        (a, b) => weekOrder.indexOf(a) - weekOrder.indexOf(b)
+      );
+    });
+  };
+
+  const onClose = () => {
+    dispatch(setRepeat(selectedRepeatDays));
+    setOpenModal(false);
+    handleRepeatLabel(selectedRepeatDays);
+  };
+  
+
+  useEffect(() => {
+    if (repeat) {
+      handleRepeatLabel(selectedRepeatDays);
+    }
+  }, [repeat, selectedRepeatDays]);
+
   return (
     <>
-      <Text style={[styles.label, { color: theme.colors.inactive }]}>
-        Repeat
-      </Text>
       <View style={styles.container}>
-        <SelectButton label={label} onPress={onPress} />
+        <SelectButton
+          label={label}
+          onPress={() => {
+            setOpenModal(true);
+          }}
+        >
+          <CalendarSync color={theme.colors.text} size={15} />
+        </SelectButton>
       </View>
       <Modal isOpen={openModal} onClose={onClose} label="Repeat">
         <View style={styles.repeatContainer}>
-          {daysOfWeek.map(({ label: dayLabel, value }, index) => (
+          {weekdays.map(({ label: dayLabel, value }, index) => (
             <Pressable
               key={index}
               onPress={() => onSelect(value)}
               style={[
                 styles.repeatDay,
                 {
-                  backgroundColor: tempSelected.includes(value)
+                  backgroundColor: selectedRepeatDays.includes(value)
                     ? theme.colors.selected
                     : "transparent",
                   borderColor: theme.colors.border,
@@ -76,7 +89,7 @@ const Repeat = ({ setRepeatDays, repeatDays }: RepeatProps) => {
               <Check
                 size={24}
                 color={
-                  tempSelected.includes(value)
+                  selectedRepeatDays.includes(value)
                     ? theme.colors.text
                     : "transparent"
                 }

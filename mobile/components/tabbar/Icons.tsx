@@ -25,7 +25,13 @@ const icons = {
 };
 
 const Icons = ({ color, routeName }: IconsType) => {
-  return icons[routeName](color);
+  const IconFn = icons[routeName];
+  if (!IconFn) {
+    console.warn(`No icon found for route: ${routeName}`);
+    return null;
+  }
+  return IconFn(color);
 };
+
 
 export default Icons;

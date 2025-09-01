@@ -7,64 +7,70 @@ import TimePicker from "./TimePicker";
 import DatePicker from "./DatePicker";
 import ErrorComponent from "@/components/ui/Error";
 import Reminder from "./Reminder";
-import Repeat from "@/components/calendar/Repeat";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { defaultDate, defaultTime, defaultReminder } from "@/constants/date";
 import SelectDay from "./SelectDay";
-import {
-  TaskDateType,
-  DateType,
-  ReminderType,
-  DayValueType,
-  TimeType,
-} from "@/types/index";
+import { ReminderType, TimeType } from "@/types/index";
+import { TaskStartDateType } from "@/types/date";
+import { TaskDeadlineType } from "@/types/date";
+import { RawDateType } from "@/types/date";
+import { handleDeadlineValues, handleStartValues } from "@/utils/dateUtils";
 
-type CalendarProps = {
-  type: "start" | "end";
+type CalendarProps<T extends "start" | "end"> = {
+  type: T;
   label: string;
   isOpen: boolean;
   onClose: () => void;
   error: string | null;
-  onSave: (date: TaskDateType) => void;
+  onSave: (
+    date: T extends "start" ? TaskStartDateType : TaskDeadlineType
+  ) => void;
 };
 
-const Calendar = ({
+const Calendar = <T extends "start" | "end">({
   label,
   isOpen,
   onClose,
   error,
   onSave,
   type,
-}: CalendarProps) => {
+}: CalendarProps<T>) => {
   const theme = useColorScheme();
-  const startDate = useSelector((state: RootState) => state.newTask.date);
-  const deadline = useSelector((state: RootState) => state.newTask.deadline);
-  const selectedType = type === "start" ? startDate : deadline;
+  const reminder = useSelector((state: RootState) => state.newTask.reminder);
+  const newTask = useSelector((state: RootState) => state.newTask);
 
-  const [selectedDate, setSelectedDate] = useState<DateType>(
+  const startDate = handleStartValues(newTask);
+  const deadlineDate = handleDeadlineValues(newTask);
+
+  const selectedType = type === "start" ? startDate : deadlineDate;
+
+  const [selectedDate, setSelectedDate] = useState<RawDateType>(
     selectedType?.date ?? defaultDate
   );
   const [selectedTime, setSelectedTime] = useState<TimeType>(
     selectedType?.time ?? defaultTime
   );
   const [selectedReminder, setSelectedReminder] = useState<ReminderType>(
-    selectedType?.reminder ?? defaultReminder
+    reminder ?? defaultReminder
   );
-  const [selectedRepeatDays, setSelectedRepeatDays] = useState<DayValueType[]>(
-    selectedType?.repeat ?? []
-  );
+  
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const handleDateChange = () => {
-    const newDate: TaskDateType = {
+    const base = {
       date: selectedDate,
       time: selectedTime,
-      repeat: selectedRepeatDays,
-      reminder: selectedReminder,
     };
 
-    onSave(newDate);
+    if (type === "start") {
+      onSave({
+        ...base,
+        reminder: selectedReminder,
+      } as any);
+    } else if (type === "end") {
+      onSave(base as any);
+    }
   };
 
   const closeCalenadar = () => {
@@ -79,14 +85,10 @@ const Calendar = ({
           setSelectedDate={setSelectedDate}
           selectedDate={selectedDate}
         />
-        <Reminder
-          reminder={selectedReminder}
-          setReminder={setSelectedReminder}
-        />
         {type === "start" && (
-          <Repeat
-            repeatDays={selectedRepeatDays}
-            setRepeatDays={setSelectedRepeatDays}
+          <Reminder
+            reminder={selectedReminder}
+            setReminder={setSelectedReminder}
           />
         )}
         <TimePicker selectedTime={selectedTime} setTime={setSelectedTime} />

@@ -4,9 +4,10 @@ import { useDispatch } from "react-redux";
 
 import SelectButton from "@/components/ui/SelectButton";
 import CreateLabel from "./CreateLabel";
-import { LabelType, LabelsType } from "@/types";
+import { LabelsType } from "@/types";
 import ActionModal from "./ActionModal";
 import { setLabel } from "@/store/slices/newTaskSlice";
+import { LabelType } from "@/db/schema";
 
 const LabelList = ({ labels }: LabelsType) => {
   const dispatch = useDispatch();

@@ -19,6 +19,7 @@ import { AppDispatch } from "@/store/store";
 
 // TODO: create seperated folder (username) for these two components
 // TODO: start coding create title and desc part
+// TODO: set username max 20 letters
 
 type UsernameType = {
   username: string
