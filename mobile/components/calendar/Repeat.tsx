@@ -53,7 +53,7 @@ const Repeat = () => {
     if (repeat) {
       handleRepeatLabel(selectedRepeatDays);
     }
-  }, [repeat, selectedRepeatDays]);
+  }, []);
 
   return (
     <>
