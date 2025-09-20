@@ -47,7 +47,9 @@ const Task = ({ task }: TaskType) => {
       {/* TODO: find a better design to show high container */}
       {(task.startDateSelected || task.highPriority) && (
         <View style={styles.rightSideContainer}>
-          {task.startDateSelected && <TaskDateView start={startDate} deadline={deadlineDate} />}
+          {task.startDateSelected && (
+            <TaskDateView start={startDate} deadline={deadlineDate} />
+          )}
           {task.highPriority && (
             <View
               style={[
@@ -93,14 +95,6 @@ const styles = StyleSheet.create({
   taskLabel: {
     fontSize: fontSize.xs,
     fontWeight: "300",
-  },
-  startContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
   },
   rightSideContainer: {
     flexShrink: 0,

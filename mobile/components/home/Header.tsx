@@ -7,13 +7,17 @@ import Sort from "./Sort";
 import Filter from "./Filter";
 
 // TODO: right corner beside title make button "motivation" and motivate user
+// TODO: make better and modern header
+// TODO: remove padding on sides for better header
 
 const Header = () => {
   const theme = useColorScheme();
   const user = useSelector((state: RootState) => state.user);
-  const taskLength = useSelector(
+  const tasksLength = useSelector((state: RootState) => state.tasks.length);
+  const selectedTasksLength = useSelector(
     (state: RootState) => state.tasks.tasks.length
   );
+
   return (
     <View style={styles.container}>
       <Text style={[styles.title, { color: theme.colors.text }]}>
@@ -25,14 +29,14 @@ const Header = () => {
           "Hi 👋"
         )}
       </Text>
-      {taskLength > 0 && (
+      {tasksLength > 0 && (
         <View style={styles.dataOrganizerContainer}>
           <Filter />
           <View style={styles.sortContainer}>
             <Text
               style={[styles.taskLengthText, { color: theme.colors.inactive }]}
             >
-              {taskLength} tasks
+              {selectedTasksLength} tasks
             </Text>
             <Sort />
           </View>

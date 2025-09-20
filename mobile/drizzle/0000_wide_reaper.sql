@@ -9,6 +9,7 @@ CREATE TABLE `tasks_table` (
 	`description` text,
 	`label_id` text,
 	`start_date_selected` integer NOT NULL,
+	`start_date` text,
 	`start_year` integer,
 	`start_month` integer,
 	`start_day` integer,
@@ -24,6 +25,7 @@ CREATE TABLE `tasks_table` (
 	`repeat` text,
 	`high_priority` integer NOT NULL,
 	`points` integer NOT NULL,
+	`is_finished` integer NOT NULL,
 	`created_at` text,
 	`updated_at` text,
 	FOREIGN KEY (`label_id`) REFERENCES `labels_table`(`id`) ON UPDATE no action ON DELETE no action

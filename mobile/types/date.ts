@@ -40,6 +40,7 @@ export type TaskDateAndTimeType = {
 export type TaskDeadlineType = TaskDateAndTimeType;
 
 export type TaskStartDateType = TaskDateAndTimeType & {
+  startDate: string | null;
   reminder: ReminderType | null;
 };
 

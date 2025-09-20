@@ -12,9 +12,9 @@ export type TaskStateType = Omit<TaskWithLabel, "reminder" | "repeat"> & {
 
 export type TasksArrayType = {
   tasks: TaskWithLabel[];
+  length: number,
   filter: FilterType;
   sort: SortType;
-  loading: boolean;
 };
 
 export type LabelCustomType = {
@@ -31,7 +31,7 @@ export type DataOrganizerType = {
   value: string;
 };
 
-export type FilterId = "today" | "week" | "all" | "high" | "done";
+export type FilterId = "today" | "week" | "all" | "high" | string;
 
 export type FilterType = {
   id: FilterId;

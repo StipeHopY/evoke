@@ -10,9 +10,9 @@ import { FILTER_OPTIONS, SORT_OPTIONS } from "@/constants/data";
 
 const initialState: TasksArrayType = {
   tasks: [],
+  length: 0,
   filter: FILTER_OPTIONS[0],
   sort: SORT_OPTIONS[0],
-  loading: false,
 };
 
 const tasksSlice = createSlice({
@@ -31,8 +31,8 @@ const tasksSlice = createSlice({
     setSort(state, action: PayloadAction<SortType>) {
       state.sort = action.payload;
     },
-    setLoading(state, action: PayloadAction<boolean>) {
-      state.loading = action.payload;
+    setLength(state, action: PayloadAction<number>) {
+      state.length = action.payload;
     },
     clearTasks(state) {
       state.tasks = [];
@@ -46,6 +46,6 @@ export const {
   clearTasks,
   setFilter,
   setSort,
-  setLoading,
+  setLength,
 } = tasksSlice.actions;
 export default tasksSlice.reducer;

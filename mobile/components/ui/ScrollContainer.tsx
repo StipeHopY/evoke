@@ -6,6 +6,7 @@ type ScrollContainerType = {
   type: "row" | "column";
   style?: ViewStyle;
   contentContainerStyle?: ViewStyle;
+  bounces?: boolean;
 };
 
 const ScrollContainer = ({
@@ -13,6 +14,7 @@ const ScrollContainer = ({
   style,
   type,
   contentContainerStyle,
+  bounces = false,
 }: ScrollContainerType) => {
   return (
     <View style={styles.container}>
@@ -21,6 +23,7 @@ const ScrollContainer = ({
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         style={[styles.scroll, style]}
+        bounces={bounces}
         contentContainerStyle={[
           styles.itemsContainer,
           contentContainerStyle,

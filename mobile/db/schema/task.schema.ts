@@ -14,6 +14,7 @@ export const tasks = sqliteTable("tasks_table", {
   startDateSelected: integer("start_date_selected", { mode: "boolean" })
     .notNull()
     .$default(() => false),
+  startDate: text("start_date"),
   startYear: integer("start_year"),
   startMonth: integer("start_month"),
   startDay: integer("start_day"),
@@ -35,6 +36,9 @@ export const tasks = sqliteTable("tasks_table", {
   points: integer("points")
     .notNull()
     .$default(() => 0),
+  isFinished: integer("is_finished", { mode: "boolean" })
+    .notNull()
+    .$default(() => false),
   createdAt: text("created_at").$defaultFn(() => new Date().toISOString()),
   updatedAt: text("updated_at").$defaultFn(() => new Date().toISOString()),
 });

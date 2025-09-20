@@ -16,6 +16,7 @@ const initialState: Omit<TaskStateType, "id"> = {
   labelId: null,
   label: null,
   startDateSelected: false,
+  startDate: null,
   startYear: null,
   startMonth: null,
   startDay: null,
@@ -30,6 +31,7 @@ const initialState: Omit<TaskStateType, "id"> = {
   reminder: null,
   repeat: null,
   highPriority: false,
+  isFinished: false,
   points: 0,
   createdAt: null,
   updatedAt: null,
@@ -47,6 +49,7 @@ const newTaskSlice = createSlice({
       state.labelId = action.payload.id;
     },
     setStart(state, action: PayloadAction<TaskStartDateType>) {
+      state.startDate = action.payload.startDate;
       state.reminder = action.payload.reminder;
       state.startDateSelected = true;
       state.startYear = action.payload.date.year;
@@ -66,6 +69,9 @@ const newTaskSlice = createSlice({
     setHighPriority(state, action: PayloadAction<boolean>) {
       state.highPriority = action.payload;
     },
+    setIsFinished(state, action: PayloadAction<boolean>) {
+      state.isFinished = action.payload;
+    },
     setRepeat(state, action: PayloadAction<DayValueType[] | null>) {
       state.repeat = action.payload;
     },
@@ -81,6 +87,7 @@ export const {
   setStart,
   setDeadline,
   setHighPriority,
+  setIsFinished,
   setRepeat,
   resetNewTask,
 } = newTaskSlice.actions;

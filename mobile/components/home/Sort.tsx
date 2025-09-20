@@ -10,8 +10,6 @@ import Modal from "@/components/ui/Modal";
 import { SortType } from "@/types/task";
 import { setSort } from "@/store/slices/tasksSlice";
 
-// TODO: for sort and filtering if data is loading set buttons disabled
-
 const Sort = () => {
   const theme = useColorScheme();
   const dispatch = useDispatch<AppDispatch>();

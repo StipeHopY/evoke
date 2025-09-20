@@ -1,4 +1,4 @@
-import { FilterType, SortType } from "@/types/task";
+import { FilterType, SortType, LabelCustomType } from "@/types/task";
 
 export const dbName: string = process.env.EXPO_DATABASE_NAME ?? "evokeDB";
 
@@ -27,9 +27,12 @@ export const SORT_OPTIONS: SortType[] = [
 ];
 
 export const FILTER_OPTIONS: FilterType[] = [
+  { id: "all", value: "All" },
   { id: "today", value: "Today" },
   { id: "week", value: "Week" },
-  { id: "all", value: "All" },
   { id: "high", value: "High" },
-  { id: "done", value: "Done" },
 ];
+
+export const getFilterOptions = (labels: LabelCustomType[]): FilterType[] => {
+  return [...FILTER_OPTIONS, ...labels];
+};

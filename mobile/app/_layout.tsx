@@ -16,7 +16,7 @@ import Error from "@/components/ui/Error";
 import migrations from "@/drizzle/migrations";
 import { db, tasks, labels } from "@/db/database";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 
 const RootLayout = () => {
   const { success, error: migrationError } = useMigrations(db, migrations);
@@ -44,10 +44,13 @@ const RootLayout = () => {
   //   resetDb();
   // }, []);
 
+  // TODO: on hold down add reload
+
   const handlePrepareApp = async () => {
     try {
       await Font.loadAsync(Fonts);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // NOTES: remove this promise
+      // await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // TODO: remove this
       // await AsyncStorage.removeItem("labels");

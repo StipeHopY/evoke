@@ -1,10 +1,7 @@
 import { Text, StyleSheet, Pressable } from "react-native";
-import { useSelector } from "react-redux";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
 import { DataOrganizerType } from "@/types/task";
-import { RootState } from "@/store/store";
-import Loader from "../ui/Loader";
 
 type OrganizerButtonsProps = {
   setSelected: (selected: DataOrganizerType) => void;
@@ -18,18 +15,12 @@ const OrganizerButtons = ({
   option,
 }: OrganizerButtonsProps) => {
   const theme = useColorScheme();
-  const loading = useSelector((state: RootState) => state.tasks.loading);
-
-  const handlePress = () => {
-    if (!loading) {
-      setSelected(option);
-    }
-  };
 
   return (
     <Pressable
-      onPress={handlePress}
-      disabled={loading}
+      onPress={() => {
+        setSelected(option);
+      }}
       style={[
         styles.container,
         {
@@ -42,17 +33,12 @@ const OrganizerButtons = ({
         style={[
           styles.label,
           {
-            color: active
-              ? loading
-                ? "transparent"
-                : theme.colors.text
-              : theme.colors.inactive,
+            color: active ? theme.colors.text : theme.colors.inactive,
           },
         ]}
       >
         {option.value}
       </Text>
-      {active && loading && <Loader style={styles.loaderOverlay} />}
     </Pressable>
   );
 };
@@ -72,11 +58,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "500",
-  },
-  loaderOverlay: {
-    position: "absolute",
-    width: 16,
-    height: 16,
   },
 });
 

@@ -9,6 +9,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { getLabelsAction } from "@/store/actions/labelsActions";
 
 // TODO: acutally make pop up list on click
+// TODO: try to make these things get on render of app labels and tasks etc...
 
 const Labels = () => {
   const dispatch = useDispatch<AppDispatch>();

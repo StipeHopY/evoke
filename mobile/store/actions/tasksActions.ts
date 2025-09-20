@@ -1,28 +1,49 @@
 import { Dispatch } from "redux";
-import { desc, eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { nanoid } from "@reduxjs/toolkit";
 
 import { ActionType } from "@/types";
 import { handleError } from "@/utils/handleError";
-import { getTasks, clearTasks, createTask, setLoading } from "@/store/slices/tasksSlice";
+import {
+  getTasks,
+  clearTasks,
+  createTask,
+  setLength,
+} from "@/store/slices/tasksSlice";
 import { resetNewTask } from "@/store/slices/newTaskSlice";
 import { db, tasks, labels } from "@/db/database";
 import { SortType, TaskStateType } from "@/types/task";
 import { FilterType } from "@/types/task";
 import { MAX_TASKS } from "@/constants/data";
+import { filterTasks, sortTasks } from "@/utils/data";
+
+export const getTasksLengthAction =
+  () =>
+  async (dispatch: Dispatch): Promise<ActionType> => {
+    const totalTasksResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(tasks);
+
+    await dispatch(setLength(totalTasksResult[0].count));
+
+    return {
+      error: null,
+    };
+  };
 
 export const getTasksAction =
   (filter: FilterType, sort: SortType) =>
   async (dispatch: Dispatch): Promise<ActionType> => {
     try {
-      dispatch(setLoading(true));
-      await new Promise((resolve) => setTimeout(resolve, 4000));
-      
+      // NOTES: remove this promise
+      // await new Promise((resolve) => setTimeout(resolve, 4000));
+
       const storedTasks = await db
         .select()
         .from(tasks)
         .leftJoin(labels, eq(tasks.labelId, labels.id))
-        .orderBy(desc(tasks.createdAt))
+        .where(filterTasks(filter.id))
+        .orderBy(sortTasks(sort.id))
         .limit(MAX_TASKS);
 
       const tasksState: TaskStateType[] = storedTasks.map((table) => {
@@ -33,7 +54,6 @@ export const getTasksAction =
       });
 
       await dispatch(getTasks(tasksState));
-      dispatch(setLoading(false));
       return { error: null };
     } catch (err) {
       const error = handleError(err, "Failed to get tasks");

@@ -15,7 +15,7 @@ import { ReminderType, TimeType } from "@/types/index";
 import { TaskStartDateType } from "@/types/date";
 import { TaskDeadlineType } from "@/types/date";
 import { RawDateType } from "@/types/date";
-import { handleDeadlineValues, handleStartValues } from "@/utils/dateUtils";
+import { buildDateTime, handleDeadlineValues, handleStartValues } from "@/utils/dateUtils";
 
 type CalendarProps<T extends "start" | "end"> = {
   type: T;
@@ -63,9 +63,12 @@ const Calendar = <T extends "start" | "end">({
       time: selectedTime,
     };
 
+    const selectedStartDate = buildDateTime(selectedDate, selectedTime)
+
     if (type === "start") {
       onSave({
         ...base,
+        startDate: selectedStartDate.toISOString(),
         reminder: selectedReminder,
       } as any);
     } else if (type === "end") {

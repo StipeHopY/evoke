@@ -243,6 +243,7 @@ export const handleStartValues = (
 ): TaskStartDateType | null => {
   const {
     startDateSelected,
+    startDate,
     startYear,
     startMonth,
     startDay,
@@ -256,6 +257,7 @@ export const handleStartValues = (
   }
 
   return {
+    startDate,
     date: {
       day: startDay!,
       month: startMonth!,

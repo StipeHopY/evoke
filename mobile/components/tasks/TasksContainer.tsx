@@ -6,14 +6,17 @@ import { useRouter } from "expo-router";
 import ErrorComponent from "@/components/ui/Error";
 import Task from "./Task";
 import { AppDispatch, RootState } from "@/store/store";
-import { getTasksAction } from "@/store/actions/tasksActions";
+import {
+  getTasksAction,
+  getTasksLengthAction,
+} from "@/store/actions/tasksActions";
 import { handleError } from "@/utils/handleError";
 import { TaskStateType } from "@/types/task";
 import ScrollContainer from "@/components/ui/ScrollContainer";
 import useColorScheme from "@/common/hooks/useColorScheme";
 import AnimatedButton from "@/components/ui/AnimatedButton";
 import { DETAILS_SCREEN } from "@/constants/routes";
-import Loader from "@/components/ui/Loader";
+import SkeletonTask from "@/components/skeleton/SkeletonTask";
 
 const TasksContainer = () => {
   const theme = useColorScheme();
@@ -21,10 +24,11 @@ const TasksContainer = () => {
   const router = useRouter();
 
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
-  const loading = useSelector((state: RootState) => state.tasks.loading);
+  const tasksLength = useSelector((state: RootState) => state.tasks.length);
   const filter = useSelector((state: RootState) => state.tasks.filter);
   const sort = useSelector((state: RootState) => state.tasks.sort);
 
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleNavigateToCreateTask = () => {
@@ -33,6 +37,7 @@ const TasksContainer = () => {
 
   const handleGetTasksData = async () => {
     try {
+      setLoading(true);
       const { error: err } = await dispatch(getTasksAction(filter, sort));
       if (err) {
         setError(err);
@@ -42,27 +47,34 @@ const TasksContainer = () => {
     } catch (err) {
       const errorMessage = handleError(err);
       setError(errorMessage);
-    } 
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     handleGetTasksData();
   }, [filter, sort]);
 
+  useEffect(() => {
+    dispatch(getTasksLengthAction());
+  }, [tasksLength]);
+
   if (loading) {
-    return <Loader />;
+    return <SkeletonTask />;
   }
 
   return (
     <View style={styles.container}>
       <ErrorComponent message={error} setMessage={setError} isModal={true} />
-      {tasks.length > 0 && !loading ? (
+      {tasksLength > 0 && !loading && (
         <ScrollContainer type="column" contentContainerStyle={{ gap: 13 }}>
           {tasks.map((task: TaskStateType) => (
             <Task key={task.id} task={task} />
           ))}
         </ScrollContainer>
-      ) : (
+      )}
+      {tasksLength === 0 && !loading && (
         <View style={styles.createTaskContainer}>
           <Text style={[styles.createTaskTitle, { color: theme.colors.text }]}>
             Create your first task
