@@ -10,6 +10,9 @@ type ErrorProps = {
   isModal?: boolean;
 };
 
+// TODO: make better modal, use someone's else
+  // TODO: remove error component and replace every error with toast react native
+
 const Error = ({ message, setMessage, isModal = false }: ErrorProps) => {
   const [isOpen, setIsOpen] = useState(!!message);
   const theme = useColorScheme();

@@ -4,6 +4,8 @@ import { nanoid } from "nanoid";
 import { labels } from "./label.schema";
 import { DayValueType, ReminderType } from "@/types/date";
 
+// TODO: fix enum here and in label, to define better schemas
+
 export const tasks = sqliteTable("tasks_table", {
   id: text("id")
     .primaryKey()
@@ -36,9 +38,7 @@ export const tasks = sqliteTable("tasks_table", {
   points: integer("points")
     .notNull()
     .$default(() => 0),
-  isFinished: integer("is_finished", { mode: "boolean" })
-    .notNull()
-    .$default(() => false),
+  status: text({ enum: ["pending", "in_progress", "finished"] }).notNull(),
   createdAt: text("created_at").$defaultFn(() => new Date().toISOString()),
   updatedAt: text("updated_at").$defaultFn(() => new Date().toISOString()),
 });

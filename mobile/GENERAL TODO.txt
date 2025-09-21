@@ -16,3 +16,11 @@
 
 
 Each level unlocks a title or badge (e.g., “Beginner → Consistent → Achiever → Master”).
+
+🥳 Celebrate Milestones
+
+If the user finishes multiple tasks:
+
+After 5 tasks → small modal: “You crushed 5 tasks today! 🚀”
+
+Weekly recap: “This week: 23 tasks completed, keep going!”

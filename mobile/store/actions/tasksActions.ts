@@ -1,5 +1,5 @@
 import { Dispatch } from "redux";
-import { eq, sql } from "drizzle-orm";
+import { and, sql, eq, inArray } from "drizzle-orm";
 import { nanoid } from "@reduxjs/toolkit";
 
 import { ActionType } from "@/types";
@@ -9,27 +9,28 @@ import {
   clearTasks,
   createTask,
   setLength,
+  removeTask,
 } from "@/store/slices/tasksSlice";
 import { resetNewTask } from "@/store/slices/newTaskSlice";
+import { setStatus } from "@/store/slices/tasksSlice";
 import { db, tasks, labels } from "@/db/database";
-import { SortType, TaskStateType } from "@/types/task";
+import {
+  SortType,
+  TaskStateType,
+  TaskStatus,
+  TaskWithLabel,
+} from "@/types/task";
 import { FilterType } from "@/types/task";
 import { MAX_TASKS } from "@/constants/data";
 import { filterTasks, sortTasks } from "@/utils/data";
 
-export const getTasksLengthAction =
-  () =>
-  async (dispatch: Dispatch): Promise<ActionType> => {
-    const totalTasksResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(tasks);
+export const getTasksLengthAction = () => async (dispatch: Dispatch) => {
+  const totalTasksResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(tasks);
 
-    await dispatch(setLength(totalTasksResult[0].count));
-
-    return {
-      error: null,
-    };
-  };
+  await dispatch(setLength(totalTasksResult[0].count));
+};
 
 export const getTasksAction =
   (filter: FilterType, sort: SortType) =>
@@ -42,7 +43,12 @@ export const getTasksAction =
         .select()
         .from(tasks)
         .leftJoin(labels, eq(tasks.labelId, labels.id))
-        .where(filterTasks(filter.id))
+        .where(
+          and(
+            filterTasks(filter.id),
+            inArray(tasks.status, ["pending", "in_progress"])
+          )
+        )
         .orderBy(sortTasks(sort.id))
         .limit(MAX_TASKS);
 
@@ -61,12 +67,53 @@ export const getTasksAction =
     }
   };
 
+export const getSingleTaskAction = async (
+  id: string | undefined
+): Promise<{ error: string | null; data: TaskStateType | null }> => {
+  try {
+    if (!id) {
+      return {
+        error: "ID is required",
+        data: null,
+      };
+    }
+
+    const [result] = await db
+      .select()
+      .from(tasks)
+      .leftJoin(labels, eq(tasks.labelId, labels.id))
+      .where(eq(tasks.id, id));
+
+    if (!result) {
+      return { error: "Task not found", data: null };
+    }
+
+    const task: TaskStateType = {
+      ...result.tasks_table,
+      label: result.labels_table ? { ...result.labels_table } : null,
+    };
+
+    return {
+      error: null,
+      data: task,
+    };
+  } catch (err) {
+    const error = handleError(err, "Failed to get task");
+    return { error, data: null };
+  }
+};
+
 export const createTaskAction =
   (newTask: Omit<TaskStateType, "id">) =>
   async (dispatch: Dispatch): Promise<ActionType> => {
     try {
-      if (!newTask.title) return { error: "Title is required" };
-      if (!newTask.labelId) return { error: "Label is required" };
+      if (!newTask.title) {
+        return { error: "Title is required" };
+      }
+
+      if (!newTask.labelId) {
+        return { error: "Label is required" };
+      }
 
       const now = new Date().toISOString();
       const label = await db
@@ -100,3 +147,34 @@ export const createTaskAction =
 export const clearTasksAction = () => async (dispatch: Dispatch) => {
   dispatch(clearTasks());
 };
+
+export const changeTaskStatusAction =
+  (task: TaskStateType, status: TaskStatus) =>
+  async (dispatch: Dispatch): Promise<ActionType> => {
+    try {
+      if (!task) {
+        return {
+          error: "Task is required",
+        };
+      }
+
+      if (task.status === "finished") {
+        return {
+          error: "Task is already finished",
+        };
+      }
+
+      await db.update(tasks).set({ status }).where(eq(tasks.id, task.id));
+      dispatch(setStatus({ id: task.id, status }));
+
+      if (status === "finished") {
+        dispatch(removeTask({ id: task.id }));
+      }
+
+      return { error: null };
+    } catch (err) {
+      console.error(err);
+      const error = handleError(err, "Failed to change status");
+      return { error };
+    }
+  };

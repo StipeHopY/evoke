@@ -25,7 +25,7 @@ CREATE TABLE `tasks_table` (
 	`repeat` text,
 	`high_priority` integer NOT NULL,
 	`points` integer NOT NULL,
-	`is_finished` integer NOT NULL,
+	`status` text NOT NULL,
 	`created_at` text,
 	`updated_at` text,
 	FOREIGN KEY (`label_id`) REFERENCES `labels_table`(`id`) ON UPDATE no action ON DELETE no action

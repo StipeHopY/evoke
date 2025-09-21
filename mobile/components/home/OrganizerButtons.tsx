@@ -1,4 +1,4 @@
-import { Text, StyleSheet, Pressable } from "react-native";
+import { Text, StyleSheet, Pressable, ViewStyle } from "react-native";
 
 import useColorScheme from "@/common/hooks/useColorScheme";
 import { DataOrganizerType } from "@/types/task";
@@ -7,12 +7,14 @@ type OrganizerButtonsProps = {
   setSelected: (selected: DataOrganizerType) => void;
   active: boolean;
   option: DataOrganizerType;
+  style?: ViewStyle;
 };
 
 const OrganizerButtons = ({
   active,
   setSelected,
   option,
+  style,
 }: OrganizerButtonsProps) => {
   const theme = useColorScheme();
 
@@ -27,6 +29,7 @@ const OrganizerButtons = ({
           borderColor: active ? theme.colors.active : theme.colors.border,
           backgroundColor: active ? theme.colors.background : theme.colors.main,
         },
+        style,
       ]}
     >
       <Text

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { SQLiteProvider } from "expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 import "../global.css";
 import { store } from "@/store/store";
@@ -17,6 +19,7 @@ import migrations from "@/drizzle/migrations";
 import { db, tasks, labels } from "@/db/database";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system/legacy";
+import { toastConfig } from "@/components/ui/Toast";
 
 const RootLayout = () => {
   const { success, error: migrationError } = useMigrations(db, migrations);
@@ -93,9 +96,12 @@ const RootLayout = () => {
       options={{ enableChangeListener: true }}
     >
       <Provider store={store}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-        </Stack>
+        <GestureHandlerRootView>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+          </Stack>
+          <Toast config={toastConfig} />
+        </GestureHandlerRootView>
       </Provider>
     </SQLiteProvider>
   );

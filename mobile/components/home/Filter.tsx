@@ -54,14 +54,20 @@ const Filter = () => {
         Array.from({ length: 5 }).map((_, index) => (
           <SkeletonText key={index} width={70} height={35} />
         ))}
-      {!loading && labels && filterOptions.map((filter: FilterType) => (
-        <OrganizerButtons
-          key={filter.id}
-          option={filter}
-          active={selectedFilter.id === filter.id}
-          setSelected={() => handleSelectFilter(filter)}
-        />
-      ))}
+      {!loading &&
+        labels &&
+        filterOptions.map((filter: FilterType, index) => (
+          <OrganizerButtons
+            key={filter.id}
+            option={filter}
+            active={selectedFilter.id === filter.id}
+            setSelected={() => handleSelectFilter(filter)}
+            style={{
+              marginLeft: index === 0 ? 16 : 0, // first button
+              marginRight: index === filterOptions.length - 1 ? 16 : 0, // last button
+            }}
+          />
+        ))}
       <ErrorComponent message={error} setMessage={setError} isModal={true} />
     </ScrollContainer>
   );

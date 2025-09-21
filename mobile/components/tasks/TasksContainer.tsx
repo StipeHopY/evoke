@@ -69,7 +69,7 @@ const TasksContainer = () => {
       <ErrorComponent message={error} setMessage={setError} isModal={true} />
       {tasksLength > 0 && !loading && (
         <ScrollContainer type="column" contentContainerStyle={{ gap: 13 }}>
-          {tasks.map((task: TaskStateType) => (
+          {tasks.map((task) => (
             <Task key={task.id} task={task} />
           ))}
         </ScrollContainer>

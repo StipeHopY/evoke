@@ -5,14 +5,20 @@ import { ReminderType } from ".";
 export type TaskWithLabel = TaskType & { label: LabelType | null };
 
 // TODO: change this if works out
-export type TaskStateType = Omit<TaskWithLabel, "reminder" | "repeat"> & {
+export type TaskStateType = Omit<
+  TaskWithLabel,
+  "reminder" | "repeat" | "status"
+> & {
+  status: TaskStatus;
   reminder: ReminderType | null;
   repeat: DayValueType[] | null;
 };
 
+export type TaskStatus = "pending" | "in_progress" | "finished";
+
 export type TasksArrayType = {
   tasks: TaskWithLabel[];
-  length: number,
+  length: number;
   filter: FilterType;
   sort: SortType;
 };

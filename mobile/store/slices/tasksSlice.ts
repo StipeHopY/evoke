@@ -5,6 +5,7 @@ import {
   SortType,
   TasksArrayType,
   TaskStateType,
+  TaskStatus,
 } from "@/types/task";
 import { FILTER_OPTIONS, SORT_OPTIONS } from "@/constants/data";
 
@@ -34,6 +35,19 @@ const tasksSlice = createSlice({
     setLength(state, action: PayloadAction<number>) {
       state.length = action.payload;
     },
+    setStatus(
+      state,
+      action: PayloadAction<{ id: string; status: TaskStatus }>
+    ) {
+      const { id, status } = action.payload;
+      const task = state.tasks.find((t) => t.id === id);
+      if (task) {
+        task.status = status;
+      }
+    },
+    removeTask(state, action: PayloadAction<{ id: string }>) {
+      state.tasks = state.tasks.filter((t) => t.id !== action.payload.id);
+    },
     clearTasks(state) {
       state.tasks = [];
     },
@@ -45,6 +59,8 @@ export const {
   createTask,
   clearTasks,
   setFilter,
+  setStatus,
+  removeTask,
   setSort,
   setLength,
 } = tasksSlice.actions;

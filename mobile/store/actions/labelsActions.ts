@@ -21,7 +21,6 @@ export const getLabelsAction =
   () =>
   async (dispatch: Dispatch): Promise<ActionType> => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 4000));
       const userItem = await AsyncStorage.getItem("user");
       if (!userItem) {
         return {

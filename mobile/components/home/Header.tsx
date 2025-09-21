@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: "500",
+    paddingLeft: 20
   },
   dataOrganizerContainer: {
     display: "flex",
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingHorizontal: 20,
   },
   taskLengthText: {
     fontSize: 14,

@@ -1,5 +1,4 @@
 import { View, StyleSheet, Text } from "react-native";
-import * as Animatable from "react-native-animatable";
 
 import ScreenContainer from "@/components/ui/ScreenContainer";
 import Header from "@/components/home/Header";
@@ -12,9 +11,6 @@ const HomeScreen = () => {
         <Header />
         <TasksContainer />
       </View>
-      <Animatable.View style={{backgroundColor: "red"}} animation="bounceInLeft" duration={1000}>
-        <Text>Animation Example!</Text>
-      </Animatable.View>
     </ScreenContainer>
   );
 };
@@ -25,7 +21,6 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "flex-start",
     textAlign: "left",
-    paddingHorizontal: 20,
     gap: 20,
   },
 });
