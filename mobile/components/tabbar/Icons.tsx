@@ -1,5 +1,5 @@
 import {
-  House,
+  ListChecks,
   MessageSquareText,
   CirclePlus,
   Trophy,
@@ -17,7 +17,7 @@ type IconsType = ColorType & {
 };
 
 const icons = {
-  home: (color: string) => <House strokeWidth={2} size={26} color={color} />,
+  home: (color: string) => <ListChecks strokeWidth={2} size={26} color={color} />,
   chat: (color: string) => <MessageSquareText strokeWidth={2} size={26} color={color} />,
   create: (color: string) => <CirclePlus strokeWidth={2} size={26} color={color} />,
   goals: (color: string) => <Trophy strokeWidth={2} size={26} color={color} />,
