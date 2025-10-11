@@ -29,3 +29,6 @@ yarn-error.*
 *.pem
 
 app-example
+
+GENERAL-TODO.txt
+main-idea.txt
